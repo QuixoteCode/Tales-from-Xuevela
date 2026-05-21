@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"strings"
 )
 
 var name string
@@ -10,6 +11,14 @@ var strength uint8
 var tenacity uint8
 var luck uint8
 const availableAttributePoints uint8 = 15
+
+type Character struct {
+	Name      string
+	Strength  uint8
+	Tenacity  uint8
+	Luck      uint8
+	Hitpoints    uint8
+}
 
 // Checks whether the character attribute is 10 or lower
 func getAttribute(statName string, prompt string) uint8 {
@@ -63,33 +72,64 @@ func main() {
 		
 	}
 
+	player := Character{
+		Name:     name,
+		Strength: strength,
+		Tenacity: tenacity,
+		Luck:     luck,
+		Hitpoints:   int(tenacity) * 5,
+	}
+
 	fmt.Println("Your adventure starts now, get ready...")
 
 	// Waits three seconds to build suspense
 	time.Sleep(3 * time.Second)
 
-	fmt.Println("It's a sunny summer morning in what by all looks is the middle of a particularly overgrown fallow field, you are awaken from your slumber by a loud noise in the distance")
+	fmt.Println("It's a sunny summer morning in what by all looks is the middle of a particularly overgrown fallow field, you are awaken from your slumber by a loud noise in the distance coming from the North")
 
 	var choice string
 
-	fmt.Println("Do you go left or right?")
-	fmt.Scanln(&choice)
+	fmt.Println("Do you go North or South?")
 
-	if choice == "left" {
-		decision1Left()
-	} else if choice == "right" {
-		decision1Right()
-	} else {
-		// TODO Re-ask the player
-		fmt.Println("You hesitate, unable to choose.")
+	for {
+		fmt.Scanln(&choice)
+
+		// We convert the input to lowercase to avoid any issues
+		choice = strings.ToLower(choice)
+
+		if choice == "north" {
+			decision1North()
+			break
+		} else if choice == "south" {
+			decision1South()
+			break
+		} else {
+			fmt.Println("You hesitate, unable to choose.\n")
+			fmt.Println("Please enter either North or South.\n")
+		}
+
+	}
+}
+
+func decision1North() {
+	fmt.Println("You head North towards the sound...")
+
+	rat := Character{
+		Name:     "Rat",
+		Strength: 1,
+		Tenacity: 2,
+		Luck:     1,
+		Health:   10,
 	}
 
+	fmt.Println("A giant rat jumps out of the grass! It looks angry...")
+	
+	combat(player, &rat)
 }
 
-func decision1Left() {
-	fmt.Println("You head left toward the sound...")
+func decision1South() {
+	fmt.Println("You head South into the tall grass...")
 }
 
-func decision1Right() {
-	fmt.Println("You head right into the tall grass...")
-}
+// TODO combat
+func combat(player *Character, enemy *Character) { }
