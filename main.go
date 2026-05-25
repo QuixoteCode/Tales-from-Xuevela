@@ -6,17 +6,21 @@ import (
 	"strings"
 )
 
+// TODO agility is fairly useless as of now, as it only determines initial combat order
+// TODO make it so attributes can never be 0
 var name string
 var strength uint8
 var tenacity uint8
+var agility uint8
 var luck uint8
-const availableAttributePoints uint8 = 15
+const availableAttributePoints uint8 = 20
 
 type Character struct {
-	Name      string
-	Strength  uint8
-	Tenacity  uint8
-	Luck      uint8
+	Name         string
+	Strength     uint8
+	Tenacity     uint8
+	Agility      uint8
+	Luck         uint8
 	Hitpoints    uint8
 }
 
@@ -45,9 +49,10 @@ func main() {
 	for {
 		strength = getAttribute("Strength", "Enter your strength:\n")
 		tenacity = getAttribute("Tenacity", "Enter your tenacity:\n")
+		agility = getAttribute("Agility", "Enter your agility:\n")
 		luck = getAttribute("Luck", "Enter your luck:\n")
 
-		total := strength + tenacity + luck
+		total := strength + tenacity + agility + luck
 
 		fmt.Printf("\nTotal attribute points used: %d/%d\n",
 			total, availableAttributePoints)
@@ -73,11 +78,12 @@ func main() {
 	}
 
 	player := Character{
-		Name:     name,
-		Strength: strength,
-		Tenacity: tenacity,
-		Luck:     luck,
-		Hitpoints:   int(tenacity) * 5,
+		Name:        name,
+		Strength:    strength,
+		Tenacity:    tenacity,
+		Agility:     agility,
+		Luck:        luck,
+		Hitpoints:   uint8(tenacity) * 5,
 	}
 
 	fmt.Println("Your adventure starts now, get ready...")
@@ -98,7 +104,7 @@ func main() {
 		choice = strings.ToLower(choice)
 
 		if choice == "north" {
-			decision1North()
+			decision1North(&player)
 			break
 		} else if choice == "south" {
 			decision1South()
@@ -111,19 +117,20 @@ func main() {
 	}
 }
 
-func decision1North() {
+func decision1North(player *Character) {
 	fmt.Println("You head North towards the sound...")
 
 	rat := Character{
-		Name:     "Rat",
-		Strength: 1,
-		Tenacity: 2,
-		Luck:     1,
-		Health:   10,
+		Name:      "Rat",
+		Strength:  1,
+		Tenacity:  2,
+		Agility:   1,
+		Luck:      1,
 	}
+	rat.Hitpoints = rat.Tenacity * 5
 
 	fmt.Println("A giant rat jumps out of the grass! It looks angry...")
-	
+
 	combat(player, &rat)
 }
 
@@ -131,5 +138,42 @@ func decision1South() {
 	fmt.Println("You head South into the tall grass...")
 }
 
-// TODO combat
-func combat(player *Character, enemy *Character) { }
+func combat(player *Character, enemy *Character) {
+
+	// Determine turn order (initiative) based on agility
+	var first *Character
+	var second *Character
+
+	if player.Agility >= enemy.Agility {
+		first = player
+		second = enemy
+	} else {
+		first = enemy
+		second = player
+	}
+
+	for player.Hitpoints > 0 && enemy.Hitpoints > 0 {
+
+		// First character attacks
+		fmt.Printf("%s attacks %s!\n", first.Name, second.Name)
+		second.Hitpoints -= first.Strength
+
+		fmt.Printf("%s has %d HP left\n", second.Name, second.Hitpoints)
+
+		if second.Hitpoints <= 0 {
+			fmt.Printf("%s is defeated!\n", second.Name)
+			break
+		}
+
+		// Second character attacks
+		fmt.Printf("%s attacks %s!\n", second.Name, first.Name)
+		first.Hitpoints -= second.Strength
+
+		fmt.Printf("%s has %d HP left\n", first.Name, first.Hitpoints)
+
+		if first.Hitpoints <= 0 {
+			fmt.Printf("%s is defeated!\n", first.Name)
+			break
+		}
+	}
+}
