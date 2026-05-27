@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 	"strings"
+	"math/rand"
 )
 
-// TODO agility is fairly useless as of now, as it only determines initial combat order
 // TODO make it so attributes can never be 0
 var name string
 var strength uint8
@@ -156,7 +156,23 @@ func combat(player *Character, enemy *Character) {
 
 		// First character attacks
 		fmt.Printf("%s attacks %s!\n", first.Name, second.Name)
-		second.Hitpoints -= first.Strength
+
+		// TODO fix uint8 vs. int conflict
+		var rollEvasionSecondCharacter uint8 = rand.Intn(100)
+		var rollCriticalStrikeFirstCharacter uint8 = rand.Intn(100)
+
+		if (second.Agility >= rollEvasionSecondCharacter) {
+			fmt.Printf("%s has evaded %d's attack!\n", second.Name, first.Name)
+		} else { 
+			if first.Luck >= rollCriticalStrikeFirstCharacter {
+				// Critical strike
+				second.Hitpoints -= first.Strength * 3
+				fmt.Printf("%s has struck %d critically!\n", first.Name, second.Name)
+			} else {
+				//Normal strike
+				second.Hitpoints -= first.Strength
+			}  
+		}
 
 		fmt.Printf("%s has %d HP left\n", second.Name, second.Hitpoints)
 
@@ -165,6 +181,7 @@ func combat(player *Character, enemy *Character) {
 			break
 		}
 
+		// TODO apply same logic as when the first character attacks
 		// Second character attacks
 		fmt.Printf("%s attacks %s!\n", second.Name, first.Name)
 		first.Hitpoints -= second.Strength
