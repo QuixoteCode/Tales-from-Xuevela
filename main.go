@@ -5,9 +5,9 @@ import (
 	"time"
 	"strings"
 	"math/rand"
+	"os"
 )
 
-// TODO make it so attributes can never be 0
 var name string
 var strength uint8
 var tenacity uint8
@@ -15,16 +15,17 @@ var agility uint8
 var luck uint8
 const availableAttributePoints uint8 = 20
 
+// TODO differenciate between max hitpoints and current hitpoints
 type Character struct {
 	Name         string
 	Strength     uint8
 	Tenacity     uint8
 	Agility      uint8
 	Luck         uint8
-	Hitpoints    uint8
+	Hitpoints    int
 }
 
-// Checks whether the character attribute is 10 or lower
+// Checks whether the character attribute is 10 or lower and bigger than 0
 func getAttribute(statName string, prompt string) uint8 {
 	var value int
 
@@ -32,11 +33,16 @@ func getAttribute(statName string, prompt string) uint8 {
 		fmt.Print(prompt)
 		fmt.Scanln(&value)
 
-		if value >= 0 && value <= 10 {
-			return uint8(value)
-		}
+		switch {
+			case value >= 0 && value <= 10:
+				return uint8(value)
 
-		fmt.Printf("%s must be 10 or lower. Try again.\n", statName)
+			case value > 10:
+				fmt.Printf("%s must be 10 or lower. Try again.\n", statName)
+
+			case value < 0:
+				fmt.Printf("%s cannot be lower than 0. Try again.\n", statName)
+		}
 	}
 }
 
@@ -83,7 +89,7 @@ func main() {
 		Tenacity:    tenacity,
 		Agility:     agility,
 		Luck:        luck,
-		Hitpoints:   uint8(tenacity) * 5,
+		Hitpoints:   int(tenacity) * 5,
 	}
 
 	fmt.Println("Your adventure starts now, get ready...")
@@ -115,10 +121,17 @@ func main() {
 		}
 
 	}
+
+	if player.Hitpoints <= 0 {
+		fmt.Printf("%s is defeated!\n", player.Name)
+		os.Exit(0)
+	}
 }
 
 func decision1North(player *Character) {
 	fmt.Println("You head North towards the sound...")
+
+	time.Sleep(2 * time.Second)
 
 	rat := Character{
 		Name:      "Rat",
@@ -127,9 +140,11 @@ func decision1North(player *Character) {
 		Agility:   1,
 		Luck:      1,
 	}
-	rat.Hitpoints = rat.Tenacity * 5
+	rat.Hitpoints = int(rat.Tenacity) * 5
 
 	fmt.Println("A giant rat jumps out of the grass! It looks angry...")
+
+	time.Sleep(2 * time.Second)
 
 	combat(player, &rat)
 }
@@ -157,20 +172,20 @@ func combat(player *Character, enemy *Character) {
 		// First character attacks
 		fmt.Printf("%s attacks %s!\n", first.Name, second.Name)
 
-		// TODO fix uint8 vs. int conflict
-		var rollEvasionSecondCharacter uint8 = rand.Intn(100)
-		var rollCriticalStrikeFirstCharacter uint8 = rand.Intn(100)
+		var rollEvasionSecondCharacter uint8 = uint8(rand.Intn(100))
+		var rollCriticalStrikeFirstCharacter uint8 = uint8(rand.Intn(100))
+		var randomAdditionalDamageFirstAttack uint8 = uint8(rand.Intn(2))
 
 		if (second.Agility >= rollEvasionSecondCharacter) {
-			fmt.Printf("%s has evaded %d's attack!\n", second.Name, first.Name)
+			fmt.Printf("%s has evaded %s's attack!\n", second.Name, first.Name)
 		} else { 
 			if first.Luck >= rollCriticalStrikeFirstCharacter {
 				// Critical strike
-				second.Hitpoints -= first.Strength * 3
-				fmt.Printf("%s has struck %d critically!\n", first.Name, second.Name)
+				second.Hitpoints -= int((first.Strength + randomAdditionalDamageFirstAttack) * 3)
+				fmt.Printf("%s has struck %s critically!\n", first.Name, second.Name)
 			} else {
 				//Normal strike
-				second.Hitpoints -= first.Strength
+				second.Hitpoints -= int(first.Strength + randomAdditionalDamageFirstAttack)
 			}  
 		}
 
@@ -181,10 +196,27 @@ func combat(player *Character, enemy *Character) {
 			break
 		}
 
-		// TODO apply same logic as when the first character attacks
+		time.Sleep(time.Second)
+
 		// Second character attacks
 		fmt.Printf("%s attacks %s!\n", second.Name, first.Name)
-		first.Hitpoints -= second.Strength
+
+		var rollEvasionFirstCharacter uint8 = uint8(rand.Intn(100))
+		var rollCriticalStrikeSecondCharacter uint8 = uint8(rand.Intn(100))
+		var randomAdditionalDamageSecondAttack uint8 = uint8(rand.Intn(2))
+
+		if (first.Agility >= rollEvasionFirstCharacter) {
+			fmt.Printf("%s has evaded %s's attack!\n", first.Name, second.Name)
+		} else {
+			if second.Luck >= rollCriticalStrikeSecondCharacter {
+				// Critical strike
+				first.Hitpoints -= int((second.Strength + randomAdditionalDamageSecondAttack) * 3)
+				fmt.Printf("%s has struck %s critically!\n", second.Name, first.Name)
+			} else {
+				//Normal strike
+				first.Hitpoints -= int(second.Strength + randomAdditionalDamageSecondAttack)
+			}
+		}
 
 		fmt.Printf("%s has %d HP left\n", first.Name, first.Hitpoints)
 
@@ -192,5 +224,7 @@ func combat(player *Character, enemy *Character) {
 			fmt.Printf("%s is defeated!\n", first.Name)
 			break
 		}
+
+		time.Sleep(time.Second)
 	}
 }
