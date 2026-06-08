@@ -6,6 +6,7 @@ import (
 	"strings"
 	"math/rand"
 	"os"
+	"bufio"
 )
 
 var name string
@@ -15,14 +16,14 @@ var agility uint8
 var luck uint8
 const availableAttributePoints uint8 = 20
 
-// TODO differenciate between max hitpoints and current hitpoints
 type Character struct {
-	Name         string
-	Strength     uint8
-	Tenacity     uint8
-	Agility      uint8
-	Luck         uint8
-	Hitpoints    int
+	Name                string
+	Strength            uint8
+	Tenacity            uint8
+	Agility             uint8
+	Luck                uint8
+	MaxHitpoints        int
+	CurrentHitpoints    int
 }
 
 // Checks whether the character attribute is 10 or lower and bigger than 0
@@ -84,12 +85,13 @@ func main() {
 	}
 
 	player := Character{
-		Name:        name,
-		Strength:    strength,
-		Tenacity:    tenacity,
-		Agility:     agility,
-		Luck:        luck,
-		Hitpoints:   int(tenacity) * 5,
+		Name:                name,
+		Strength:            strength,
+		Tenacity:            tenacity,
+		Agility:             agility,
+		Luck:                luck,
+		MaxHitpoints:        int(tenacity) * 5,
+		CurrentHitpoints:    int(tenacity) * 5,
 	}
 
 	fmt.Println("Your adventure starts now, get ready...")
@@ -122,7 +124,7 @@ func main() {
 
 	}
 
-	if player.Hitpoints <= 0 {
+	if player.CurrentHitpoints <= 0 {
 		fmt.Printf("%s is defeated!\n", player.Name)
 		os.Exit(0)
 	}
@@ -140,7 +142,8 @@ func decision1North(player *Character) {
 		Agility:   1,
 		Luck:      1,
 	}
-	rat.Hitpoints = int(rat.Tenacity) * 5
+	rat.MaxHitpoints = int(rat.Tenacity) * 5
+	rat.CurrentHitpoints = int(rat.Tenacity) * 5
 
 	fmt.Println("A giant rat jumps out of the grass! It looks angry...")
 
@@ -151,6 +154,35 @@ func decision1North(player *Character) {
 
 func decision1South() {
 	fmt.Println("You head South into the tall grass...")
+
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("You find a tall bald man, almost as big as the cow next to him. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
+	
+	time.Sleep(1 * time.Second)
+	
+	fmt.Println("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		scanner.Scan()
+		choice := strings.ToLower(strings.TrimSpace(scanner.Text()))
+	
+		if choice == "1" || choice == "ask where are we" {
+			fmt.Println("You inquire about this place")
+			break
+		}
+	
+		if choice == "2" || choice == "say nothing" {
+			fmt.Println("You say nothing")
+			break
+		}
+	
+		fmt.Println("You hesitate, unable to choose.\n")
+		fmt.Println("Please enter either \"1\" / \"ask where are we\" or \"2\" / \"say nothing\".\n")
+	}
+
 }
 
 func combat(player *Character, enemy *Character) {
@@ -167,7 +199,7 @@ func combat(player *Character, enemy *Character) {
 		second = player
 	}
 
-	for player.Hitpoints > 0 && enemy.Hitpoints > 0 {
+	for player.CurrentHitpoints > 0 && enemy.CurrentHitpoints > 0 {
 
 		// First character attacks
 		fmt.Printf("%s attacks %s!\n", first.Name, second.Name)
@@ -181,17 +213,17 @@ func combat(player *Character, enemy *Character) {
 		} else { 
 			if first.Luck >= rollCriticalStrikeFirstCharacter {
 				// Critical strike
-				second.Hitpoints -= int((first.Strength + randomAdditionalDamageFirstAttack) * 3)
+				second.CurrentHitpoints -= int((first.Strength + randomAdditionalDamageFirstAttack) * 3)
 				fmt.Printf("%s has struck %s critically!\n", first.Name, second.Name)
 			} else {
 				//Normal strike
-				second.Hitpoints -= int(first.Strength + randomAdditionalDamageFirstAttack)
+				second.CurrentHitpoints -= int(first.Strength + randomAdditionalDamageFirstAttack)
 			}  
 		}
 
-		fmt.Printf("%s has %d HP left\n", second.Name, second.Hitpoints)
+		fmt.Printf("%s has %d hitpoints left\n", second.Name, second.CurrentHitpoints)
 
-		if second.Hitpoints <= 0 {
+		if second.CurrentHitpoints <= 0 {
 			fmt.Printf("%s is defeated!\n", second.Name)
 			break
 		}
@@ -210,17 +242,17 @@ func combat(player *Character, enemy *Character) {
 		} else {
 			if second.Luck >= rollCriticalStrikeSecondCharacter {
 				// Critical strike
-				first.Hitpoints -= int((second.Strength + randomAdditionalDamageSecondAttack) * 3)
+				first.CurrentHitpoints -= int((second.Strength + randomAdditionalDamageSecondAttack) * 3)
 				fmt.Printf("%s has struck %s critically!\n", second.Name, first.Name)
 			} else {
 				//Normal strike
-				first.Hitpoints -= int(second.Strength + randomAdditionalDamageSecondAttack)
+				first.CurrentHitpoints -= int(second.Strength + randomAdditionalDamageSecondAttack)
 			}
 		}
 
-		fmt.Printf("%s has %d HP left\n", first.Name, first.Hitpoints)
+		fmt.Printf("%s has %d hitpoints left\n", first.Name, first.CurrentHitpoints)
 
-		if first.Hitpoints <= 0 {
+		if first.CurrentHitpoints <= 0 {
 			fmt.Printf("%s is defeated!\n", first.Name)
 			break
 		}
