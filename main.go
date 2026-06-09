@@ -14,7 +14,8 @@ var strength uint8
 var tenacity uint8
 var agility uint8
 var luck uint8
-const availableAttributePoints uint8 = 20
+var charisma uint8
+const availableAttributePoints uint8 = 25
 
 type Character struct {
 	Name                string
@@ -22,6 +23,7 @@ type Character struct {
 	Tenacity            uint8
 	Agility             uint8
 	Luck                uint8
+	Charisma            uint8
 	MaxHitpoints        int
 	CurrentHitpoints    int
 }
@@ -58,8 +60,9 @@ func main() {
 		tenacity = getAttribute("Tenacity", "Enter your tenacity:\n")
 		agility = getAttribute("Agility", "Enter your agility:\n")
 		luck = getAttribute("Luck", "Enter your luck:\n")
+		charisma = getAttribute("Charisma", "Enter your charisma:\n")
 
-		total := strength + tenacity + agility + luck
+		total := strength + tenacity + agility + luck + charisma
 
 		fmt.Printf("\nTotal attribute points used: %d/%d\n",
 			total, availableAttributePoints)
@@ -90,8 +93,9 @@ func main() {
 		Tenacity:            tenacity,
 		Agility:             agility,
 		Luck:                luck,
+		Charisma:            charisma,
 		MaxHitpoints:        int(tenacity) * 5,
-		CurrentHitpoints:    int(tenacity) * 5,
+		CurrentHitpoints:    (int(tenacity) * 5) / 2,
 	}
 
 	fmt.Println("Your adventure starts now, get ready...")
@@ -141,9 +145,10 @@ func decision1North(player *Character) {
 		Tenacity:  2,
 		Agility:   1,
 		Luck:      1,
+		Charisma:  1,
 	}
 	rat.MaxHitpoints = int(rat.Tenacity) * 5
-	rat.CurrentHitpoints = int(rat.Tenacity) * 5
+	rat.CurrentHitpoints = (int(rat.Tenacity) * 5)
 
 	fmt.Println("A giant rat jumps out of the grass! It looks angry...")
 
@@ -157,7 +162,7 @@ func decision1South() {
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("You find a tall bald man, almost as big as the cow next to him. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
+	fmt.Println("You find a tall bald man, almost as big as the cow next to him, he's resting next to a water faucet. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
 	
 	time.Sleep(1 * time.Second)
 	
@@ -172,11 +177,36 @@ func decision1South() {
 		if choice == "1" || choice == "ask where are we" {
 			fmt.Println("You inquire about this place")
 			break
+			fmt.Println("\"Have you hit your head with a rock or something?\" You do not know how to react towards this valid hypothesis about your current situation dressed up as a quip, you feel a sharp pain in the back of your head. \"This is the small town of Mud, part of the parish of Soulstar\"")
+
+			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
+
+			// TODO
+			for {
+				scanner.Scan()
+				choicea1 := strings.ToLower(strings.TrimSpace(scanner.Text()))
+			
+				if choicea1 == "1" || choicea1 == "ask for directions" {
+					
+				}
+			
+				if choicea1 == "2" || choicea1 == "ask if you can drink from the faucet" {
+
+					// TODO Charisma roll
+					// TODO Healing from drinking
+
+				}
+			
+				fmt.Println("You hesitate, unable to choose.\n")
+				fmt.Println("Please enter either \"1\" / \"ask for directions\" or \"2\" / \"ask if you can drink from the faucet\".\n")
+			}
 		}
 	
 		if choice == "2" || choice == "say nothing" {
 			fmt.Println("You say nothing")
 			break
+			fmt.Println("The man coughs, not knowing where to look exactly. So, huh... what leads you to this place?")
+
 		}
 	
 		fmt.Println("You hesitate, unable to choose.\n")
