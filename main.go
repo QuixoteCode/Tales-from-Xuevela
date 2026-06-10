@@ -119,7 +119,7 @@ func main() {
 			decision1North(&player)
 			break
 		} else if choice == "south" {
-			decision1South()
+			decision1South(&player)
 			break
 		} else {
 			fmt.Println("You hesitate, unable to choose.\n")
@@ -157,10 +157,19 @@ func decision1North(player *Character) {
 	combat(player, &rat)
 }
 
-func decision1South() {
+func decision1South(player *Character) {
 	fmt.Println("You head South into the tall grass...")
 
 	time.Sleep(2 * time.Second)
+
+	xavier := Character{
+		Name:      "Xavier",
+		Strength:  1,
+		Tenacity:  1,
+		Agility:   1,
+		Luck:      1,
+		Charisma:  2,
+	}
 
 	fmt.Println("You find a tall bald man, almost as big as the cow next to him, he's resting next to a water faucet. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
 	
@@ -176,24 +185,27 @@ func decision1South() {
 	
 		if choice == "1" || choice == "ask where are we" {
 			fmt.Println("You inquire about this place")
-			break
+			
 			fmt.Println("\"Have you hit your head with a rock or something?\" You do not know how to react towards this valid hypothesis about your current situation dressed up as a quip, you feel a sharp pain in the back of your head. \"This is the small town of Mud, part of the parish of Soulstar\"")
 
 			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
 
-			// TODO
 			for {
 				scanner.Scan()
-				choicea1 := strings.ToLower(strings.TrimSpace(scanner.Text()))
+				choiceA := strings.ToLower(strings.TrimSpace(scanner.Text()))
 			
-				if choicea1 == "1" || choicea1 == "ask for directions" {
+				if choiceA == "1" || choiceA == "ask for directions" {
 					
+					fmt.Println("\"Mud is South of here if that's what you're asking\"")
+
 				}
 			
-				if choicea1 == "2" || choicea1 == "ask if you can drink from the faucet" {
+				if choiceA == "2" || choiceA == "ask if you can drink from the faucet" {
 
-					// TODO Charisma roll
-					// TODO Healing from drinking
+					fmt.Println("\"Huh, I would... but I'm worried about the cursed, you know?\"")
+					conversationalChallenge(player, &xavier)
+
+					// TODO Conditional logic of success
 
 				}
 			
@@ -289,4 +301,16 @@ func combat(player *Character, enemy *Character) {
 
 		time.Sleep(time.Second)
 	}
+}
+
+
+func conversationalChallenge(player *Character, enemy *Character) bool {
+
+	var roll uint8 = uint8(rand.Intn(100))
+
+	if ((player.Charisma - (enemy.Charisma / 2)) <= roll) {
+		return false
+	}
+
+	return true
 }
