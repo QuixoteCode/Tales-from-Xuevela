@@ -203,9 +203,24 @@ func decision1South(player *Character) {
 				if choiceA == "2" || choiceA == "ask if you can drink from the faucet" {
 
 					fmt.Println("\"Huh, I would... but I'm worried about the cursed, you know?\"")
-					conversationalChallenge(player, &xavier)
+					
+					resultConversationalChallengeXavier := conversationalChallenge(player, &xavier)
 
-					// TODO Conditional logic of success
+					switch resultConversationalChallengeXavier {
+						// complete success
+						case 2:
+							fmt.Println("The man allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
+							player.CurrentHitpoints += 5
+					
+						// faux pas
+						case 1:
+							fmt.Println("The man hesitates but, after a while, allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
+							player.CurrentHitpoints += 5
+					
+						// no healing
+						case 0:
+							fmt.Println("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
+						}
 
 				}
 			
@@ -304,13 +319,30 @@ func combat(player *Character, enemy *Character) {
 }
 
 
-func conversationalChallenge(player *Character, enemy *Character) bool {
+/*
+	If it returns "2" the player has succeeded 
+	If it returns "1" the player has performed somewhat acceptably but commited a faux pas
+	If it returns "0" the player has completely failed
+*/
+func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
-	var roll uint8 = uint8(rand.Intn(100))
+	var charismaRoll = rand.Intn(100)
+	threshold := int(player.Charisma) - int(enemy.Charisma)/2
 
-	if ((player.Charisma - (enemy.Charisma / 2)) <= roll) {
-		return false
-	}
+	var fauxPasRoll = rand.Intn(100)
 
-	return true
+    // Complete success
+    if charismaRoll < threshold {
+        return 2
+    }
+
+    // The player's luck and agility allows him to savage the situation and make a faux pas instead of utterly failing
+    salvage := int(player.Luck) + int(player.Agility)
+    if fauxPasRoll < salvage {
+        return 1
+    }
+
+    // Complete failure
+    return 0
+
 }
