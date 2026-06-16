@@ -185,8 +185,12 @@ func decision1South(player *Character) {
 	
 		if choice == "1" || choice == "ask where are we" {
 			fmt.Println("You inquire about this place")
+
+			time.Sleep(1 * time.Second)
 			
 			fmt.Println("\"Have you hit your head with a rock or something?\" You do not know how to react towards this valid hypothesis about your current situation dressed up as a quip, you feel a sharp pain in the back of your head. \"This is the small town of Mud, part of the parish of Soulstar\"")
+
+			time.Sleep(1 * time.Second)
 
 			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
 
@@ -198,9 +202,9 @@ func decision1South(player *Character) {
 					
 					fmt.Println("\"Mud is South of here if that's what you're asking\"")
 
-				}
-			
-				if choiceA == "2" || choiceA == "ask if you can drink from the faucet" {
+					break
+
+				} else if choiceA == "2" || choiceA == "ask if you can drink from the faucet" {
 
 					fmt.Println("\"Huh, I would... but I'm worried about the cursed, you know?\"")
 					
@@ -222,22 +226,32 @@ func decision1South(player *Character) {
 							fmt.Println("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
 						}
 
+					break
+					
+				} else {
+					fmt.Println("You hesitate, unable to choose.\n")
+					fmt.Println("Please enter either \"1\" / \"ask for directions\" or \"2\" / \"ask if you can drink from the faucet\".\n")
 				}
-			
-				fmt.Println("You hesitate, unable to choose.\n")
-				fmt.Println("Please enter either \"1\" / \"ask for directions\" or \"2\" / \"ask if you can drink from the faucet\".\n")
+
 			}
-		}
-	
-		if choice == "2" || choice == "say nothing" {
-			fmt.Println("You say nothing")
+
 			break
+
+		} else if choice == "2" || choice == "say nothing" {
+
+			fmt.Println("You say nothing")
 			fmt.Println("The man coughs, not knowing where to look exactly. So, huh... what leads you to this place?")
 
+			// TODO Elaborate
+
+			break
+
+		} else {
+
+			fmt.Println("You hesitate, unable to choose.\n")
+			fmt.Println("Please enter either \"1\" / \"ask where are we\" or \"2\" / \"say nothing\".\n")
+
 		}
-	
-		fmt.Println("You hesitate, unable to choose.\n")
-		fmt.Println("Please enter either \"1\" / \"ask where are we\" or \"2\" / \"say nothing\".\n")
 	}
 
 }
@@ -327,22 +341,34 @@ func combat(player *Character, enemy *Character) {
 func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
 	var charismaRoll = rand.Intn(100)
-	threshold := int(player.Charisma) - int(enemy.Charisma)/2
+	//threshold := int(player.Charisma) - int(enemy.Charisma)/2
+	threshold := 100
 
 	var fauxPasRoll = rand.Intn(100)
 
+	time.Sleep(1 * time.Second)
+
+	fmt.Println("You have engaged in a dialectical encounter against", enemy.Name)
+
     // Complete success
     if charismaRoll < threshold {
+		fmt.Println("You stand on the shoulders of giants and you have managed to convince your interlocutor")
+		time.Sleep(1 * time.Second)
         return 2
     }
 
     // The player's luck and agility allows him to savage the situation and make a faux pas instead of utterly failing
     salvage := int(player.Luck) + int(player.Agility)
     if fauxPasRoll < salvage {
+		fmt.Println("You have awkwardly fumbled your way into a faux pas, it could be worse, but it certainly could be better")
+		// Longer wait for further awkwardness
+		time.Sleep(3 * time.Second)
         return 1
     }
 
     // Complete failure
+	fmt.Println("You utterly failed at trying to convince your interlocutor of anything, you may as well talk to a wall")
+	time.Sleep(1 * time.Second)
     return 0
 
 }
