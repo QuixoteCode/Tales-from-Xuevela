@@ -18,14 +18,17 @@ var charisma uint8
 const availableAttributePoints uint8 = 25
 
 type Character struct {
-	Name                string
-	Strength            uint8
-	Tenacity            uint8
-	Agility             uint8
-	Luck                uint8
-	Charisma            uint8
-	MaxHitpoints        int
-	CurrentHitpoints    int
+	Name                    string
+	Strength                uint8
+	Tenacity                uint8
+	Agility                 uint8
+	Luck                    uint8
+	Charisma                uint8
+	MaxHitpoints            int
+	CurrentHitpoints        int
+	Experience              int
+	Level                   int
+	ExperienceToNextLevel   int
 }
 
 // Checks whether the character attribute is 10 or lower and bigger than 0
@@ -88,14 +91,17 @@ func main() {
 	}
 
 	player := Character{
-		Name:                name,
-		Strength:            strength,
-		Tenacity:            tenacity,
-		Agility:             agility,
-		Luck:                luck,
-		Charisma:            charisma,
-		MaxHitpoints:        int(tenacity) * 5,
-		CurrentHitpoints:    (int(tenacity) * 5) / 2,
+		Name:                   name,
+		Strength:               strength,
+		Tenacity:               tenacity,
+		Agility:                agility,
+		Luck:                   luck,
+		Charisma:               charisma,
+		MaxHitpoints:           int(tenacity) * 5,
+		CurrentHitpoints:       (int(tenacity) * 5) / 2,
+		Experience:             0,
+		Level:                  1,
+		ExperienceToNextLevel:  50,
 	}
 
 	fmt.Println("Your adventure starts now, get ready...")
@@ -256,6 +262,7 @@ func decision1South(player *Character) {
 
 }
 
+// TODO Add experience player.AddExperience(XX)
 func combat(player *Character, enemy *Character) {
 
 	// Determine turn order (initiative) based on agility
@@ -338,6 +345,7 @@ func combat(player *Character, enemy *Character) {
 	If it returns "1" the player has performed somewhat acceptably but commited a faux pas
 	If it returns "0" the player has completely failed
 */
+// TODO Add experience player.AddExperience(XX)
 func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
 	var charismaRoll = rand.Intn(100)
@@ -371,4 +379,17 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
 	time.Sleep(1 * time.Second)
     return 0
 
+}
+
+// TODO Add prints and waiting after said prints
+func (player *Character) AddExperience(ExperienceToAdd int) {
+	// Adding experience
+	player.Experience += ExperienceToAdd
+
+	// Leveling up and the required experience for next level up
+	for player.Experience >= player.ExperienceToNextLevel {
+		player.Experience -= player.ExperienceToNextLevel
+		player.Level++
+		player.ExperienceToNextLevel = 50 * player.Level
+	}
 }
