@@ -179,7 +179,7 @@ func decision1South(player *Character) {
 
 	fmt.Println("You find a tall bald man, almost as big as the cow next to him, he's resting next to a water faucet. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
 	
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Second)
 	
 	fmt.Println("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
 
@@ -192,11 +192,11 @@ func decision1South(player *Character) {
 		if choice == "1" || choice == "ask where are we" {
 			fmt.Println("You inquire about this place")
 
-			time.Sleep(1 * time.Second)
+			time.Sleep(time.Second)
 			
 			fmt.Println("\"Have you hit your head with a rock or something?\" You do not know how to react towards this valid hypothesis about your current situation dressed up as a quip, you feel a sharp pain in the back of your head. \"This is the small town of Mud, part of the parish of Soulstar\"")
 
-			time.Sleep(1 * time.Second)
+			time.Sleep(time.Second)
 
 			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
 
@@ -262,7 +262,6 @@ func decision1South(player *Character) {
 
 }
 
-// TODO Add experience player.AddExperience(XX)
 func combat(player *Character, enemy *Character) {
 
 	// Determine turn order (initiative) based on agility
@@ -337,6 +336,8 @@ func combat(player *Character, enemy *Character) {
 
 		time.Sleep(time.Second)
 	}
+
+	player.addExperience((int(enemy.Tenacity) * 10) + (int(enemy.Strength) * 10))
 }
 
 
@@ -345,23 +346,22 @@ func combat(player *Character, enemy *Character) {
 	If it returns "1" the player has performed somewhat acceptably but commited a faux pas
 	If it returns "0" the player has completely failed
 */
-// TODO Add experience player.AddExperience(XX)
 func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
 	var charismaRoll = rand.Intn(100)
-	//threshold := int(player.Charisma) - int(enemy.Charisma)/2
-	threshold := 100
+	threshold := int(player.Charisma) - int(enemy.Charisma)/2
 
 	var fauxPasRoll = rand.Intn(100)
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Second)
 
 	fmt.Println("You have engaged in a dialectical encounter against", enemy.Name)
 
     // Complete success
     if charismaRoll < threshold {
 		fmt.Println("You stand on the shoulders of giants and you have managed to convince your interlocutor")
-		time.Sleep(1 * time.Second)
+		time.Sleep(time.Second)
+		player.addExperience(int(enemy.Charisma) * 10)
         return 2
     }
 
@@ -369,6 +369,7 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
     salvage := int(player.Luck) + int(player.Agility)
     if fauxPasRoll < salvage {
 		fmt.Println("You have awkwardly fumbled your way into a faux pas, it could be worse, but it certainly could be better")
+		player.addExperience(int(enemy.Charisma) * 5)
 		// Longer wait for further awkwardness
 		time.Sleep(3 * time.Second)
         return 1
@@ -376,20 +377,22 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
     // Complete failure
 	fmt.Println("You utterly failed at trying to convince your interlocutor of anything, you may as well talk to a wall")
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Second)
     return 0
 
 }
 
-// TODO Add prints and waiting after said prints
-func (player *Character) AddExperience(ExperienceToAdd int) {
+// TODO Add waiting after prints
+func (player *Character) addExperience(ExperienceToAdd int) {
 	// Adding experience
 	player.Experience += ExperienceToAdd
+	fmt.Println("You receive %d experience points", ExperienceToAdd)
 
 	// Leveling up and the required experience for next level up
 	for player.Experience >= player.ExperienceToNextLevel {
 		player.Experience -= player.ExperienceToNextLevel
 		player.Level++
 		player.ExperienceToNextLevel = 50 * player.Level
+		fmt.Println("You have leveled up!")
+		fmt.Println("You are now level", player.Level, "and you need", player.ExperienceToNextLevel, "experience to level up again")
 	}
-}
