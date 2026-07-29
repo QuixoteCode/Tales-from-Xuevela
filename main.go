@@ -170,10 +170,10 @@ func decision1South(player *Character) {
 
 	xavier := Character{
 		Name:      "Xavier",
-		Strength:  1,
-		Tenacity:  1,
-		Agility:   1,
-		Luck:      1,
+		Strength:  4,
+		Tenacity:  4,
+		Agility:   4,
+		Luck:      4,
 		Charisma:  2,
 	}
 
@@ -204,35 +204,37 @@ func decision1South(player *Character) {
 				scanner.Scan()
 				choiceA := strings.ToLower(strings.TrimSpace(scanner.Text()))
 			
-				if choiceA == "1" || choiceA == "ask for directions" {
+				directionsChoice:
+					if choiceA == "1" || choiceA == "ask for directions" {
 					
-					fmt.Println("\"Mud is South of here if that's what you're asking\"")
+						fmt.Println("\"Mud is South of here if that's what you're asking\"")
 
-					break
+						break
 
-				} else if choiceA == "2" || choiceA == "ask if you can drink from the faucet" {
+				drinkChoice:
+					} else if choiceA == "2" || choiceA == "ask if you can drink from the faucet" {
 
-					fmt.Println("\"Huh, I would... but I'm worried about the cursed, you know?\"")
+						fmt.Println("\"Huh, I would... but I'm worried about the cursed, you know?\"")
 					
-					resultConversationalChallengeXavier := conversationalChallenge(player, &xavier)
+						resultConversationalChallengeXavier := conversationalChallenge(player, &xavier)
 
-					switch resultConversationalChallengeXavier {
-						// complete success
-						case 2:
-							fmt.Println("The man allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
-							player.CurrentHitpoints += 5
+						switch resultConversationalChallengeXavier {
+							// complete success
+							case 2:
+								fmt.Println("The man allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
+								player.CurrentHitpoints += 5
 					
-						// faux pas
-						case 1:
-							fmt.Println("The man hesitates but, after a while, allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
-							player.CurrentHitpoints += 5
+							// faux pas
+							case 1:
+								fmt.Println("The man hesitates but, after a while, allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
+								player.CurrentHitpoints += 5
 					
-						// no healing
-						case 0:
-							fmt.Println("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
-						}
+							// no healing
+							case 0:
+								fmt.Println("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
+							}
 
-					break
+						break
 					
 				} else {
 					fmt.Println("You hesitate, unable to choose.\n")
@@ -248,7 +250,29 @@ func decision1South(player *Character) {
 			fmt.Println("You say nothing")
 			fmt.Println("The man coughs, not knowing where to look exactly. So, huh... what leads you to this place?")
 
-			// TODO Elaborate
+			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet \n 3. Continue to say nothing")
+
+			// TODO fix this pseudo-code and use functions instead of gotos
+			for {
+				scanner.Scan()
+				choiceB := strings.ToLower(strings.TrimSpace(scanner.Text()))
+			
+				if choiceB == "1" || choiceB == "ask for directions" {
+					
+					choiceA = "1"
+					goto directionsChoice
+
+				} else if choiceB == "2" || choiceB == "ask if you can drink from the faucet" {
+
+					choiceA = "2"
+        			goto drinkChoice
+					
+					// TODO add choiceB == "3" || choiceB == "ask where are we" and add choiceB == "4" || choiceB == "ask if you can drink from the faucet"
+				} else {
+					fmt.Println("You hesitate, unable to choose.\n")
+					fmt.Println("Please enter either \"1\" / \"ask for directions\", \"2\" / \"ask if you can drink from the faucet\", \"3\" / \"ask where are we\" or \"4\" / \"continue to say nothing\".\n")
+				}
+			}
 
 			break
 
@@ -340,7 +364,6 @@ func combat(player *Character, enemy *Character) {
 	player.addExperience((int(enemy.Tenacity) * 10) + (int(enemy.Strength) * 10))
 }
 
-
 /*
 	If it returns "2" the player has succeeded 
 	If it returns "1" the player has performed somewhat acceptably but commited a faux pas
@@ -356,6 +379,8 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
 	time.Sleep(time.Second)
 
 	fmt.Println("You have engaged in a dialectical encounter against", enemy.Name)
+
+	time.Sleep(time.Second)
 
     // Complete success
     if charismaRoll < threshold {
@@ -382,11 +407,14 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
 }
 
-// TODO Add waiting after prints
 func (player *Character) addExperience(ExperienceToAdd int) {
+	time.Sleep(time.Second)
+
 	// Adding experience
 	player.Experience += ExperienceToAdd
 	fmt.Println("You receive %d experience points", ExperienceToAdd)
+
+	time.Sleep(time.Second)
 
 	// Leveling up and the required experience for next level up
 	for player.Experience >= player.ExperienceToNextLevel {
@@ -394,5 +422,8 @@ func (player *Character) addExperience(ExperienceToAdd int) {
 		player.Level++
 		player.ExperienceToNextLevel = 50 * player.Level
 		fmt.Println("You have leveled up!")
+		time.Sleep(time.Second)
 		fmt.Println("You are now level", player.Level, "and you need", player.ExperienceToNextLevel, "experience to level up again")
+		time.Sleep(time.Second)
 	}
+}
