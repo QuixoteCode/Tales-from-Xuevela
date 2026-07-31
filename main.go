@@ -224,23 +224,26 @@ func decision1South(player *Character) {
 
 			sayNothingToXavier()
 
-			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet \n 3. Continue to say nothing")
+			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet \n 3. ask where are we \n 4. Continue to say nothing")
 
-			// TODO fix this pseudo-code and use functions instead of gotos
 			for {
 				scanner.Scan()
 				choiceB := strings.ToLower(strings.TrimSpace(scanner.Text()))
 			
-				if choiceB == "1" || choiceB == "ask for directions" {
-					
+				switch choiceB {
+				case "1", "ask for directions":
 					askXavierForDirections()
-
-				} else if choiceB == "2" || choiceB == "ask if you can drink from the faucet" {
-
+			
+				case "2", "ask if you can drink from the faucet":
 					askXavierIfYouCanDrinkFromTheFaucet(player, &xavier)
-					
-					// TODO add choiceB == "3" || choiceB == "ask where are we" and add choiceB == "4" || choiceB == "ask if you can drink from the faucet"
-				} else {
+			
+				case "3", "ask where are we":
+					askXavierWhereWeAre()
+			
+				case "4", "continue to say nothing":
+					continueToSayNothingToXavier()
+			
+				default:
 					fmt.Println("You hesitate, unable to choose.\n")
 					fmt.Println("Please enter either \"1\" / \"ask for directions\", \"2\" / \"ask if you can drink from the faucet\", \"3\" / \"ask where are we\" or \"4\" / \"continue to say nothing\".\n")
 				}
@@ -256,6 +259,8 @@ func decision1South(player *Character) {
 		}
 	}
 
+	// TODO add choices with different text depending if the player knows where mud is or not 
+
 }
 
 func askXavierWhereWeAre() {
@@ -268,12 +273,20 @@ func askXavierWhereWeAre() {
 	time.Sleep(time.Second)
 }
 
+type GameState struct {
+    learnedMudLocationFromXavier bool
+}
+
+var game GameState
+
 func askXavierForDirections() {
 	fmt.Println("You ask Xavier for directions")
 
 	time.Sleep(time.Second)
 
 	fmt.Println("\"Mud is South of here if that's what you're asking\" he pauses for a second, \"so keep traveling in the direction you were going and you should be good\"")
+
+	game.learnedMudLocationFromXavier = true
 
 	time.Sleep(time.Second)
 }
@@ -300,6 +313,8 @@ func askXavierIfYouCanDrinkFromTheFaucet(player *Character, xavier *Character) {
 		case 0:
 			fmt.Println("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
 	}
+
+	time.Sleep(time.Second)
 }
 
 func sayNothingToXavier() {
@@ -308,6 +323,16 @@ func sayNothingToXavier() {
 	time.Sleep(time.Second)
 
 	fmt.Println("The man coughs, not knowing where to look exactly. So, huh... what leads you to this place?")
+
+	time.Sleep(time.Second)
+}
+
+func continueToSayNothingToXavier() {
+	fmt.Println("You continue to say nothing")
+
+	time.Sleep(time.Second)
+
+	fmt.Println("The man in front of you decides to shift his focus away from you, continuing with what he was doing previous to your presence in that place")
 
 	time.Sleep(time.Second)
 }
