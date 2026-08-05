@@ -122,10 +122,10 @@ func main() {
 		choice = strings.ToLower(choice)
 
 		if choice == "north" {
-			decision1North(&player)
+			decisionNorth(&player)
 			break
 		} else if choice == "south" {
-			decision1South(&player)
+			decisionSouth(&player)
 			break
 		} else {
 			fmt.Println("You hesitate, unable to choose.\n")
@@ -140,7 +140,7 @@ func main() {
 	}
 }
 
-func decision1North(player *Character) {
+func decisionNorth(player *Character) {
 	fmt.Println("You head North towards the sound...")
 
 	time.Sleep(2 * time.Second)
@@ -163,7 +163,7 @@ func decision1North(player *Character) {
 	combat(player, &rat)
 }
 
-func decision1South(player *Character) {
+func decisionSouth(player *Character) {
 	fmt.Println("You head South into the tall grass...")
 
 	time.Sleep(2 * time.Second)
@@ -259,8 +259,29 @@ func decision1South(player *Character) {
 		}
 	}
 
-	// TODO add choices with different text depending if the player knows where mud is or not 
+	if game.learnedMudLocationFromXavier {
+		fmt.Println("Do you...?: \n 1. Continue South for Mud \n 2. Continue into a forest that borders the fields")
+		scanner.Scan()
+		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
+		for {
+			// TODO Complete
+			if choiceDecision == "1" || choiceDecision == "continue south for mud" {
 
+				break
+			}
+		}
+	} else {
+		fmt.Println("Do you...?: \n 1. Continue South \n 2. Continue into a forest that borders the fields")
+		scanner.Scan()
+		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
+		for {
+			// TODO Complete
+			if choiceDecision == "1" || choiceDecision == "continue south" {
+		
+				break
+			}	
+		}
+	}
 }
 
 func askXavierWhereWeAre() {
