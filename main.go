@@ -226,28 +226,33 @@ func decisionSouth(player *Character) {
 
 			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet \n 3. ask where are we \n 4. Continue to say nothing")
 
-			for {
-				scanner.Scan()
-				choiceB := strings.ToLower(strings.TrimSpace(scanner.Text()))
+			sayNothingLoop:
+				for {
+					scanner.Scan()
+					choiceB := strings.ToLower(strings.TrimSpace(scanner.Text()))
 			
-				switch choiceB {
-				case "1", "ask for directions":
-					askXavierForDirections()
+					switch choiceB {
+					case "1", "ask for directions":
+						askXavierForDirections()
+						break sayNothingLoop
 			
-				case "2", "ask if you can drink from the faucet":
-					askXavierIfYouCanDrinkFromTheFaucet(player, &xavier)
+					case "2", "ask if you can drink from the faucet":
+						askXavierIfYouCanDrinkFromTheFaucet(player, &xavier)
+						break sayNothingLoop
 			
-				case "3", "ask where are we":
-					askXavierWhereWeAre()
+					case "3", "ask where are we":
+						askXavierWhereWeAre()
+						break sayNothingLoop
 			
-				case "4", "continue to say nothing":
-					continueToSayNothingToXavier()
+					case "4", "continue to say nothing":
+						continueToSayNothingToXavier()
+						break sayNothingLoop
 			
-				default:
-					fmt.Println("You hesitate, unable to choose.\n")
-					fmt.Println("Please enter either \"1\" / \"ask for directions\", \"2\" / \"ask if you can drink from the faucet\", \"3\" / \"ask where are we\" or \"4\" / \"continue to say nothing\".\n")
+					default:
+						fmt.Println("You hesitate, unable to choose.\n")
+						fmt.Println("Please enter either \"1\" / \"ask for directions\", \"2\" / \"ask if you can drink from the faucet\", \"3\" / \"ask where are we\" or \"4\" / \"continue to say nothing\".\n")
+					}
 				}
-			}
 
 			break
 
@@ -264,9 +269,11 @@ func decisionSouth(player *Character) {
 		scanner.Scan()
 		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		for {
-			// TODO Complete
 			if choiceDecision == "1" || choiceDecision == "continue south for mud" {
-
+				decisionSouthDecisionSouth()
+				break
+			} else if choiceDecision == "2" || choiceDecision == "continue into a forest that borders the fields" {
+				decisionSouthDecisionForest()
 				break
 			}
 		}
@@ -275,13 +282,27 @@ func decisionSouth(player *Character) {
 		scanner.Scan()
 		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		for {
-			// TODO Complete
 			if choiceDecision == "1" || choiceDecision == "continue south" {
-		
+				decisionSouthDecisionSouth()
 				break
-			}	
+			} else if choiceDecision == "2" || choiceDecision == "continue into a forest that borders the fields" {
+				decisionSouthDecisionForest()
+			}
 		}
 	}
+}
+
+func decisionSouthDecisionSouth() {
+	time.Sleep(time.Second)
+
+	// TODO change this println if the player knows about Mud
+	fmt.Println("You decide to go further South")
+}
+
+func decisionSouthDecisionForest() {
+	time.Sleep(time.Second)
+
+	fmt.Println("You penetrate the thick vegatation")
 }
 
 func askXavierWhereWeAre() {
