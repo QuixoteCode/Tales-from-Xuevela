@@ -161,6 +161,8 @@ func decisionNorth(player *Character) {
 	time.Sleep(2 * time.Second)
 
 	combat(player, &rat)
+
+	// TODO elaborate
 }
 
 func decisionSouth(player *Character) {
@@ -293,16 +295,42 @@ func decisionSouth(player *Character) {
 }
 
 func decisionSouthDecisionSouth() {
+	raven := Character{
+		Name:      "Raven",
+		Strength:  3,
+		Tenacity:  3,
+		Agility:   3,
+		Luck:      3,
+		Charisma:  3,
+	}
+
+	if game.learnedMudLocationFromXavier {
+		fmt.Println("You decide to go further South towards Mud")
+
+		time.Sleep(2 * time.Second)
+
+		fmt.Println("After much walking you find a cluster of buildings, they are grouped in small sets, forming streets inbetween them with what seems to be a townsquare in the center of it all. You assume this is Mud and a sign soon confirms your suspicions")
+	} else {
+		fmt.Println("You decide to go further South")
+
+		time.Sleep(2 * time.Second)
+
+		fmt.Println("After much walking you find a cluster of buildings, they are grouped in small sets, forming streets inbetween them with what seems to be a townsquare in the center of it all. A sign lets you know that this village is known as \"Mud\"")
+	
+		// TODO change how "game.learnedMudLocationFromXavier" is named and convert it here to true
+	}
+
 	time.Sleep(time.Second)
 
-	// TODO change this println if the player knows about Mud
-	fmt.Println("You decide to go further South")
+	fmt.Println("From the corner of your eye you perceive a shadowy figure spy on you, hurrying to close the door of the building it is living in")
 }
 
 func decisionSouthDecisionForest() {
-	time.Sleep(time.Second)
-
 	fmt.Println("You penetrate the thick vegatation")
+
+	time.Sleep(2 * time.Second)
+
+	// TODO elaborate
 }
 
 func askXavierWhereWeAre() {
