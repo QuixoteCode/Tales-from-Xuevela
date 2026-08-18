@@ -9,6 +9,19 @@ import (
 	"bufio"
 )
 
+type WeaponType int
+
+const (
+	Melee WeaponType = iota
+	Ranged
+)
+
+type Weapon struct {
+	Name   string
+	Damage int
+	Type   WeaponType
+}
+
 var name string
 var strength uint8
 var tenacity uint8
@@ -17,6 +30,7 @@ var luck uint8
 var charisma uint8
 const availableAttributePoints uint8 = 25
 
+// TODO add dexterity
 type Character struct {
 	Name                    string
 	Strength                uint8
@@ -29,6 +43,8 @@ type Character struct {
 	Experience              int
 	Level                   int
 	ExperienceToNextLevel   int
+	MeleeWeapon             Weapon
+    RangedWeapon            Weapon
 }
 
 // Checks whether the character attribute is 10 or lower and bigger than 0
@@ -90,6 +106,21 @@ func main() {
 		
 	}
 
+	// TODO adjust damage
+	var defaultMeleeWeapon = Weapon{
+		Name:   "Stick",
+		Damage: 1,
+		Type:   Melee,
+	}
+	
+	// TODO adjust damage
+	var defaultRangedWeapon = Weapon{
+		Name:   "Pebbles",
+		Damage: 1,
+		Type:   Ranged,
+	}
+
+	// TODO add dexterity
 	player := Character{
 		Name:                   name,
 		Strength:               strength,
@@ -102,6 +133,8 @@ func main() {
 		Experience:             0,
 		Level:                  1,
 		ExperienceToNextLevel:  50,
+		MeleeWeapon:            defaultMeleeWeapon,
+		RangedWeapon:           defaultRangedWeapon,
 	}
 
 	fmt.Println("Your adventure starts now, get ready...")
@@ -170,6 +203,7 @@ func decisionSouth(player *Character) {
 
 	time.Sleep(2 * time.Second)
 
+	// TODO add dexterity
 	xavier := Character{
 		Name:      "Xavier",
 		Strength:  4,
@@ -266,7 +300,7 @@ func decisionSouth(player *Character) {
 		}
 	}
 
-	if game.learnedMudLocationFromXavier {
+	if game.learnedMudLocation {
 		fmt.Println("Do you...?: \n 1. Continue South for Mud \n 2. Continue into a forest that borders the fields")
 		scanner.Scan()
 		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
@@ -295,6 +329,7 @@ func decisionSouth(player *Character) {
 }
 
 func decisionSouthDecisionSouth() {
+	// TODO add dexterity
 	raven := Character{
 		Name:      "Raven",
 		Strength:  3,
@@ -304,7 +339,7 @@ func decisionSouthDecisionSouth() {
 		Charisma:  3,
 	}
 
-	if game.learnedMudLocationFromXavier {
+	if game.learnedMudLocation {
 		fmt.Println("You decide to go further South towards Mud")
 
 		time.Sleep(2 * time.Second)
@@ -317,12 +352,14 @@ func decisionSouthDecisionSouth() {
 
 		fmt.Println("After much walking you find a cluster of buildings, they are grouped in small sets, forming streets inbetween them with what seems to be a townsquare in the center of it all. A sign lets you know that this village is known as \"Mud\"")
 	
-		// TODO change how "game.learnedMudLocationFromXavier" is named and convert it here to true
+		game.learnedMudLocation = true
 	}
 
 	time.Sleep(time.Second)
 
 	fmt.Println("From the corner of your eye you perceive a shadowy figure spy on you, hurrying to close the door of the building it is living in")
+
+	// TODO elaborate
 }
 
 func decisionSouthDecisionForest() {
@@ -344,7 +381,7 @@ func askXavierWhereWeAre() {
 }
 
 type GameState struct {
-    learnedMudLocationFromXavier bool
+    learnedMudLocation bool
 }
 
 var game GameState
@@ -356,7 +393,7 @@ func askXavierForDirections() {
 
 	fmt.Println("\"Mud is South of here if that's what you're asking\" he pauses for a second, \"so keep traveling in the direction you were going and you should be good\"")
 
-	game.learnedMudLocationFromXavier = true
+	game.learnedMudLocation = true
 
 	time.Sleep(time.Second)
 }
@@ -407,6 +444,7 @@ func continueToSayNothingToXavier() {
 	time.Sleep(time.Second)
 }
 
+// TODO implement weapons
 func combat(player *Character, enemy *Character) {
 
 	// Determine turn order (initiative) based on agility
