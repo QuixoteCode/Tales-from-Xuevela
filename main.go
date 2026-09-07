@@ -24,16 +24,17 @@ type Weapon struct {
 
 var name string
 var strength uint8
+var dexterity uint8
 var tenacity uint8
 var agility uint8
 var luck uint8
 var charisma uint8
-const availableAttributePoints uint8 = 25
+const availableAttributePoints uint8 = 30
 
-// TODO add dexterity
 type Character struct {
 	Name                    string
 	Strength                uint8
+	Dexterity               uint8
 	Tenacity                uint8
 	Agility                 uint8
 	Luck                    uint8
@@ -76,6 +77,7 @@ func main() {
 	// Keep asking until total points are valid
 	for {
 		strength = getAttribute("Strength", "Enter your strength:\n")
+		dexterity = getAttribute("Dexterity", "Enter your dexterity:\n")
 		tenacity = getAttribute("Tenacity", "Enter your tenacity:\n")
 		agility = getAttribute("Agility", "Enter your agility:\n")
 		luck = getAttribute("Luck", "Enter your luck:\n")
@@ -106,24 +108,22 @@ func main() {
 		
 	}
 
-	// TODO adjust damage
 	var defaultMeleeWeapon = Weapon{
 		Name:   "Stick",
-		Damage: 1,
+		Damage: int(strength) + 1,
 		Type:   Melee,
 	}
 	
-	// TODO adjust damage
 	var defaultRangedWeapon = Weapon{
 		Name:   "Pebbles",
-		Damage: 1,
+		Damage: int(dexterity) + 1,
 		Type:   Ranged,
 	}
 
-	// TODO add dexterity
 	player := Character{
 		Name:                   name,
 		Strength:               strength,
+		Dexterity:              dexterity,
 		Tenacity:               tenacity,
 		Agility:                agility,
 		Luck:                   luck,
@@ -173,6 +173,13 @@ func main() {
 	}
 }
 
+// Used by rat in func decisionNorth(player *Character)
+var claws = Weapon{
+	Name:   "Claws",
+	Damage: int(strength),
+	Type:   Melee,
+}
+
 func decisionNorth(player *Character) {
 	fmt.Println("You head North towards the sound...")
 
@@ -180,11 +187,12 @@ func decisionNorth(player *Character) {
 
 	rat := Character{
 		Name:      "Rat",
-		Strength:  1,
-		Tenacity:  2,
-		Agility:   1,
-		Luck:      1,
-		Charisma:  1,
+		Strength:    1,
+		Tenacity:    2,
+		Agility:     1,
+		Luck:        1,
+		Charisma:    1,
+		MeleeWeapon: claws,
 	}
 	rat.MaxHitpoints = int(rat.Tenacity) * 5
 	rat.CurrentHitpoints = (int(rat.Tenacity) * 5)
@@ -203,10 +211,11 @@ func decisionSouth(player *Character) {
 
 	time.Sleep(2 * time.Second)
 
-	// TODO add dexterity
+	// TODO add weapon/weapons of Xavier
 	xavier := Character{
 		Name:      "Xavier",
 		Strength:  4,
+		Dexterity: 4,
 		Tenacity:  4,
 		Agility:   4,
 		Luck:      4,
@@ -329,10 +338,11 @@ func decisionSouth(player *Character) {
 }
 
 func decisionSouthDecisionSouth() {
-	// TODO add dexterity
+	// TODO add weapon/weapons of raven
 	raven := Character{
 		Name:      "Raven",
 		Strength:  3,
+		Dexterity: 3,
 		Tenacity:  3,
 		Agility:   3,
 		Luck:      3,
