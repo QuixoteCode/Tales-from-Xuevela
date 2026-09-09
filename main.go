@@ -48,10 +48,10 @@ type Character struct {
     RangedWeapon            Weapon
 }
 
-// Checks whether the character attribute is 10 or lower and bigger than 0
 func getAttribute(statName string, prompt string) uint8 {
 	var value int
 
+	// Checks whether the character attribute is 10 or lower and 0 or higher
 	for {
 		fmt.Print(prompt)
 		fmt.Scanln(&value)
@@ -186,7 +186,7 @@ func decisionNorth(player *Character) {
 	time.Sleep(2 * time.Second)
 
 	rat := Character{
-		Name:      "Rat",
+		Name:        "Rat",
 		Strength:    1,
 		Tenacity:    2,
 		Agility:     1,
@@ -206,20 +206,27 @@ func decisionNorth(player *Character) {
 	// TODO elaborate
 }
 
+// Used by Xavier in func decisionSouth(player *Character)
+var hoe = Weapon{
+	Name:   "Hoe",
+	Damage: int(strength) + 1,
+	Type:   Melee,
+}
+
 func decisionSouth(player *Character) {
 	fmt.Println("You head South into the tall grass...")
 
 	time.Sleep(2 * time.Second)
 
-	// TODO add weapon/weapons of Xavier
 	xavier := Character{
-		Name:      "Xavier",
-		Strength:  4,
-		Dexterity: 4,
-		Tenacity:  4,
-		Agility:   4,
-		Luck:      4,
-		Charisma:  2,
+		Name:        "Xavier",
+		Strength:    4,
+		Dexterity:   4,
+		Tenacity:    4,
+		Agility:     4,
+		Luck:        4,
+		Charisma:    2,
+		MeleeWeapon: hoe,
 	}
 
 	fmt.Println("You find a tall bald man, almost as big as the cow next to him, he's resting next to a water faucet. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
@@ -337,16 +344,24 @@ func decisionSouth(player *Character) {
 	}
 }
 
+// Used by Raven in func decisionSouthDecisionSouth()
+var ironDagger = Weapon{
+	Name:   "Hoe",
+	Damage: int(strength) + 2,
+	Type:   Melee,
+}
+
 func decisionSouthDecisionSouth() {
-	// TODO add weapon/weapons of raven
+
 	raven := Character{
-		Name:      "Raven",
-		Strength:  3,
-		Dexterity: 3,
-		Tenacity:  3,
-		Agility:   3,
-		Luck:      3,
-		Charisma:  3,
+		Name:        "Raven",
+		Strength:    3,
+		Dexterity:   3,
+		Tenacity:    3,
+		Agility:     3,
+		Luck:        3,
+		Charisma:    3,
+		MeleeWeapon: ironDagger,
 	}
 
 	if game.learnedMudLocation {
