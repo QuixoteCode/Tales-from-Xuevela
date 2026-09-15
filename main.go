@@ -201,6 +201,7 @@ func decisionNorth(player *Character) {
 
 	time.Sleep(2 * time.Second)
 
+	// TODO change
 	combat(player, &rat)
 
 	// TODO elaborate
@@ -235,6 +236,7 @@ func decisionSouth(player *Character) {
 	
 	fmt.Println("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
 
+	// TODO standardize scanners usage
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -431,18 +433,15 @@ func askXavierIfYouCanDrinkFromTheFaucet(player *Character, xavier *Character) {
 	resultConversationalChallengeXavier := conversationalChallenge(player, xavier)
 	
 	switch resultConversationalChallengeXavier {
-		// complete success
-		case 2:
+		case 2: // Complete success
 			fmt.Println("The man allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
 			player.CurrentHitpoints += 5
 	
-		// faux pas
-		case 1:
+		case 1: // Faux pas
 			fmt.Println("The man hesitates but, after a while, allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
 			player.CurrentHitpoints += 5
 	
-		// no healing
-		case 0:
+		case 0: // No healing
 			fmt.Println("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
 	}
 
@@ -470,7 +469,38 @@ func continueToSayNothingToXavier() {
 }
 
 // TODO implement weapons
-func combat(player *Character, enemy *Character) {
+func combat(player *Character, enemy *Character, enemyWeapon string) {
+
+	var chosenWeapon string
+	
+	fmt.Println("Will you use melee or ranged weapons?")
+
+	for {
+		fmt.Scanln(&chosenWeapon)
+    	chosenWeapon = strings.ToLower(strings.TrimSpace(chosenWeapon))
+
+		if chosenWeapon == "1" || chosenWeapon == "melee" {
+			
+			time.Sleep(time.Second)
+
+			fmt.Println("You have chosen to get close and personal")
+
+			break
+
+		} else if chosenWeapon == "2" || chosenWeapon == "ranged" {
+
+			time.Sleep(time.Second)
+
+			fmt.Println("You have chosen to combat at a distance")
+
+			break
+			
+		} else {
+			fmt.Println("You hesitate, unable to choose.\n")
+			fmt.Println("Please enter either \"1\" / \"melee\" or \"2\" / \"ranged\".\n")
+		}
+
+	}
 
 	// Determine turn order (initiative) based on agility
 	var first *Character
