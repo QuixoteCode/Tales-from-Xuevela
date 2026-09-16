@@ -324,7 +324,7 @@ func decisionSouth(player *Character) {
 		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		for {
 			if choiceDecision == "1" || choiceDecision == "continue south for mud" {
-				decisionSouthDecisionSouth()
+				decisionSouthDecisionSouth(player)
 				break
 			} else if choiceDecision == "2" || choiceDecision == "continue into a forest that borders the fields" {
 				decisionSouthDecisionForest()
@@ -337,7 +337,7 @@ func decisionSouth(player *Character) {
 		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		for {
 			if choiceDecision == "1" || choiceDecision == "continue south" {
-				decisionSouthDecisionSouth()
+				decisionSouthDecisionSouth(player)
 				break
 			} else if choiceDecision == "2" || choiceDecision == "continue into a forest that borders the fields" {
 				decisionSouthDecisionForest()
@@ -353,7 +353,7 @@ var ironDagger = Weapon{
 	Type:   Melee,
 }
 
-func decisionSouthDecisionSouth() {
+func decisionSouthDecisionSouth(player *Character) {
 
 	raven := Character{
 		Name:        "Raven",
@@ -387,6 +387,11 @@ func decisionSouthDecisionSouth() {
 	fmt.Println("From the corner of your eye you perceive a shadowy figure spy on you, hurrying to close the door of the building it is living in")
 
 	// TODO elaborate
+
+	// TODO add haggling | added this to silence the compiler
+	resultConversationalChallengeRaven := conversationalChallenge(player, &raven)
+	// Added this to silence the compiler
+	fmt.Println(resultConversationalChallengeRaven)
 }
 
 func decisionSouthDecisionForest() {
@@ -469,9 +474,10 @@ func continueToSayNothingToXavier() {
 }
 
 // TODO implement weapons
-func combat(player *Character, enemy *Character, enemyWeapon string) {
+func combat(player *Character, enemy *Character) {
 
 	var chosenWeapon string
+	var playerWeapon Weapon
 	
 	fmt.Println("Will you use melee or ranged weapons?")
 
@@ -485,6 +491,8 @@ func combat(player *Character, enemy *Character, enemyWeapon string) {
 
 			fmt.Println("You have chosen to get close and personal")
 
+			playerWeapon = player.MeleeWeapon
+
 			break
 
 		} else if chosenWeapon == "2" || chosenWeapon == "ranged" {
@@ -492,6 +500,8 @@ func combat(player *Character, enemy *Character, enemyWeapon string) {
 			time.Sleep(time.Second)
 
 			fmt.Println("You have chosen to combat at a distance")
+
+			playerWeapon = player.RangedWeapon
 
 			break
 			
@@ -502,16 +512,25 @@ func combat(player *Character, enemy *Character, enemyWeapon string) {
 
 	}
 
+	// TODO temporary hard-coding change to the actually set weapon of the enemy
+	enemyWeapon := enemy.MeleeWeapon
+
 	// Determine turn order (initiative) based on agility
 	var first *Character
 	var second *Character
+	var firstWeapon Weapon
+	var secondWeapon Weapon
 
 	if player.Agility >= enemy.Agility {
 		first = player
 		second = enemy
+		firstWeapon = playerWeapon
+		secondWeapon = enemyWeapon
 	} else {
 		first = enemy
 		second = player
+		firstWeapon = enemyWeapon
+		secondWeapon = playerWeapon
 	}
 
 	for player.CurrentHitpoints > 0 && enemy.CurrentHitpoints > 0 {
