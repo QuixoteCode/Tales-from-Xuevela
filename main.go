@@ -201,8 +201,7 @@ func decisionNorth(player *Character) {
 
 	time.Sleep(2 * time.Second)
 
-	// TODO change
-	combat(player, &rat)
+	combat(player, &rat, 2)
 
 	// TODO elaborate
 }
@@ -474,7 +473,7 @@ func continueToSayNothingToXavier() {
 }
 
 // TODO implement weapons
-func combat(player *Character, enemy *Character) {
+func combat(player *Character, enemy *Character, distance int) {
 
 	var chosenWeapon string
 	var playerWeapon Weapon
@@ -512,8 +511,19 @@ func combat(player *Character, enemy *Character) {
 
 	}
 
-	// TODO temporary hard-coding change to the actually set weapon of the enemy
-	enemyWeapon := enemy.MeleeWeapon
+	var enemyWeapon string
+
+	// TODO cleanup into a single "if / else if" chain
+	// TODO check compiler
+	if enemy.MeleeWeapon != nil && enemy.RangedWeapon == nil{
+		enemyWeapon := enemy.MeleeWeapon
+	}else if enemy.MeleeWeapon == nil && enemy.RangedWeapon != nil {
+		enemyWeapon := enemy.RangedWeapon
+	}else if distance <= 5 {
+		enemyWeapon := enemy.MeleeWeapon
+	}else{
+		enemyWeapon := enemy.RangedWeapon
+	}
 
 	// Determine turn order (initiative) based on agility
 	var first *Character
