@@ -16,10 +16,50 @@ const (
 	Ranged
 )
 
+type WeaponSubtype int
+
+const (
+	// Melee subtypes
+	Bladed WeaponSubtype = iota
+	Blunt
+
+	// Ranged subtypes
+	Shooting
+	Throwing
+)
+
 type Weapon struct {
-	Name   string
-	Damage int
-	Type   WeaponType
+	Name    string
+	Damage  uint8
+	Type    WeaponType
+	Subtype WeaponSubtype
+}
+
+func (w *Weapon) Valid() bool {
+	switch w.Type {
+	case Melee:
+		return w.Subtype == Bladed || w.Subtype == Blunt
+	case Ranged:
+		return w.Subtype == Shooting || w.Subtype == Throwing
+	}
+	return false
+}
+
+func NewWeapon(name string, damage uint8, t WeaponType, s WeaponSubtype) (Weapon, error) {
+	w := Weapon{
+		Name:    name,
+		Damage:  damage,
+		Type:    t,
+		Subtype: s,
+	}
+
+	if !w.Valid() {
+		return Weapon{}, fmt.Errorf(
+			"invalid weapon: type %v with subtype %v",t,s,
+		)
+	}
+
+	return w, nil
 }
 
 var name string
@@ -44,8 +84,12 @@ type Character struct {
 	Experience              int
 	Level                   int
 	ExperienceToNextLevel   int
-	MeleeWeapon             Weapon
+    MeleeWeapon             Weapon
     RangedWeapon            Weapon
+}
+
+func (w Weapon) weaponIsEmpty() bool {
+    return w.Name == "" && w.Damage == 0
 }
 
 func getAttribute(statName string, prompt string) uint8 {
@@ -83,7 +127,7 @@ func main() {
 		luck = getAttribute("Luck", "Enter your luck:\n")
 		charisma = getAttribute("Charisma", "Enter your charisma:\n")
 
-		total := strength + tenacity + agility + luck + charisma
+		total := strength + dexterity + tenacity + agility + luck + charisma
 
 		fmt.Printf("\nTotal attribute points used: %d/%d\n",
 			total, availableAttributePoints)
@@ -108,16 +152,26 @@ func main() {
 		
 	}
 
-	var defaultMeleeWeapon = Weapon{
-		Name:   "Stick",
-		Damage: int(strength) + 1,
-		Type:   Melee,
+	defaultMeleeWeapon, err := NewWeapon(
+		"Stick",
+		strength+1,
+		Melee,
+		Blunt,
+	)
+	if err != nil {
+		fmt.Println("Could not create default melee weapon:", err)
+		return
 	}
-	
-	var defaultRangedWeapon = Weapon{
-		Name:   "Pebbles",
-		Damage: int(dexterity) + 1,
-		Type:   Ranged,
+
+	defaultRangedWeapon, err := NewWeapon(
+		"Pebbles",
+		dexterity+1,
+		Ranged,
+		Throwing,
+	)
+	if err != nil {
+		fmt.Println("Could not create default ranged weapon:", err)
+		return
 	}
 
 	player := Character{
@@ -174,10 +228,12 @@ func main() {
 }
 
 // Used by rat in func decisionNorth(player *Character)
+// TODO to use the function instead
 var claws = Weapon{
-	Name:   "Claws",
-	Damage: int(strength),
-	Type:   Melee,
+	Name:    "Claws",
+	Damage:  strength,
+	Type:    Melee,
+	Subtype: Bladed,
 }
 
 func decisionNorth(player *Character) {
@@ -207,10 +263,12 @@ func decisionNorth(player *Character) {
 }
 
 // Used by Xavier in func decisionSouth(player *Character)
+// TODO to use the function instead
 var hoe = Weapon{
-	Name:   "Hoe",
-	Damage: int(strength) + 1,
-	Type:   Melee,
+	Name:    "Hoe",
+	Damage:  strength + 1,
+	Type:    Melee,
+	Subtype: Blunt,
 }
 
 func decisionSouth(player *Character) {
@@ -346,10 +404,12 @@ func decisionSouth(player *Character) {
 }
 
 // Used by Raven in func decisionSouthDecisionSouth()
+// TODO to use the function instead
 var ironDagger = Weapon{
-	Name:   "Hoe",
-	Damage: int(strength) + 2,
-	Type:   Melee,
+	Name:    "Hoe",
+	Damage:  strength + 2,
+	Type:    Melee,
+	Subtype: Shooting,
 }
 
 func decisionSouthDecisionSouth(player *Character) {
@@ -511,18 +571,19 @@ func combat(player *Character, enemy *Character, distance int) {
 
 	}
 
-	var enemyWeapon string
+	var enemyWeapon Weapon
 
 	// TODO cleanup into a single "if / else if" chain
 	// TODO check compiler
-	if enemy.MeleeWeapon != nil && enemy.RangedWeapon == nil{
-		enemyWeapon := enemy.MeleeWeapon
-	}else if enemy.MeleeWeapon == nil && enemy.RangedWeapon != nil {
-		enemyWeapon := enemy.RangedWeapon
-	}else if distance <= 5 {
-		enemyWeapon := enemy.MeleeWeapon
-	}else{
-		enemyWeapon := enemy.RangedWeapon
+	switch {
+		case enemy.MeleeWeapon.weaponIsEmpty():
+    		enemyWeapon = enemy.RangedWeapon
+		case enemy.RangedWeapon.weaponIsEmpty():
+    		enemyWeapon = enemy.MeleeWeapon
+		case distance <= 5:
+    		enemyWeapon = enemy.MeleeWeapon
+		default:
+    		enemyWeapon = enemy.RangedWeapon
 	}
 
 	// Determine turn order (initiative) based on agility
@@ -557,11 +618,11 @@ func combat(player *Character, enemy *Character, distance int) {
 		} else { 
 			if first.Luck >= rollCriticalStrikeFirstCharacter {
 				// Critical strike
-				second.CurrentHitpoints -= int((first.Strength + randomAdditionalDamageFirstAttack) * 3)
+				second.CurrentHitpoints -= int((firstWeapon.Damage + randomAdditionalDamageFirstAttack) * 3)
 				fmt.Printf("%s has struck %s critically!\n", first.Name, second.Name)
 			} else {
 				//Normal strike
-				second.CurrentHitpoints -= int(first.Strength + randomAdditionalDamageFirstAttack)
+				second.CurrentHitpoints -= int(firstWeapon.Damage + randomAdditionalDamageFirstAttack)
 			}  
 		}
 
@@ -586,11 +647,11 @@ func combat(player *Character, enemy *Character, distance int) {
 		} else {
 			if second.Luck >= rollCriticalStrikeSecondCharacter {
 				// Critical strike
-				first.CurrentHitpoints -= int((second.Strength + randomAdditionalDamageSecondAttack) * 3)
+				first.CurrentHitpoints -= int((secondWeapon.Damage + randomAdditionalDamageSecondAttack) * 3)
 				fmt.Printf("%s has struck %s critically!\n", second.Name, first.Name)
 			} else {
 				//Normal strike
-				first.CurrentHitpoints -= int(second.Strength + randomAdditionalDamageSecondAttack)
+				first.CurrentHitpoints -= int(secondWeapon.Damage + randomAdditionalDamageSecondAttack)
 			}
 		}
 
