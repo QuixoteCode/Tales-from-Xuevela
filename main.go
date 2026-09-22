@@ -1,365 +1,3 @@
-package main
-
-import (
-	"fmt"
-	"time"
-	"strings"
-	"math/rand"
-	"os"
-	"bufio"
-)
-
-type WeaponType int
-
-const (
-	Melee WeaponType = iota
-	Ranged
-)
-
-type WeaponSubtype int
-
-const (
-	// Melee subtypes
-	Bladed WeaponSubtype = iota
-	Blunt
-
-	// Ranged subtypes
-	Shooting
-	Throwing
-)
-
-type Weapon struct {
-	Name    string
-	Damage  uint8
-	Type    WeaponType
-	Subtype WeaponSubtype
-}
-
-func (w *Weapon) Valid() bool {
-	switch w.Type {
-	case Melee:
-		return w.Subtype == Bladed || w.Subtype == Blunt
-	case Ranged:
-		return w.Subtype == Shooting || w.Subtype == Throwing
-	}
-	return false
-}
-
-func NewWeapon(name string, damage uint8, t WeaponType, s WeaponSubtype) (Weapon, error) {
-	w := Weapon{
-		Name:    name,
-		Damage:  damage,
-		Type:    t,
-		Subtype: s,
-	}
-
-	if !w.Valid() {
-		return Weapon{}, fmt.Errorf(
-			"invalid weapon: type %v with subtype %v",t,s,
-		)
-	}
-
-	return w, nil
-}
-
-var name string
-var strength uint8
-var dexterity uint8
-var tenacity uint8
-var agility uint8
-var luck uint8
-var charisma uint8
-const availableAttributePoints uint8 = 30
-
-type Character struct {
-	Name                    string
-	Strength                uint8
-	Dexterity               uint8
-	Tenacity                uint8
-	Agility                 uint8
-	Luck                    uint8
-	Charisma                uint8
-	MaxHitpoints            int
-	CurrentHitpoints        int
-	Experience              int
-	Level                   int
-	ExperienceToNextLevel   int
-    MeleeWeapon             Weapon
-    RangedWeapon            Weapon
-}
-
-func (w Weapon) weaponIsEmpty() bool {
-    return w.Name == "" && w.Damage == 0
-}
-
-func getAttribute(statName string, prompt string) uint8 {
-	var value int
-
-	// Checks whether the character attribute is 10 or lower and 0 or higher
-	for {
-		fmt.Print(prompt)
-		fmt.Scanln(&value)
-
-		switch {
-			case value >= 0 && value <= 10:
-				return uint8(value)
-
-			case value > 10:
-				fmt.Printf("%s must be 10 or lower. Try again.\n", statName)
-
-			case value < 0:
-				fmt.Printf("%s cannot be lower than 0. Try again.\n", statName)
-		}
-	}
-}
-
-func main() {
-	fmt.Print("Enter your name:\n")
-	fmt.Scanln(&name)
-	fmt.Println("Hello,", name)
-
-	// Keep asking until total points are valid
-	for {
-		strength = getAttribute("Strength", "Enter your strength:\n")
-		dexterity = getAttribute("Dexterity", "Enter your dexterity:\n")
-		tenacity = getAttribute("Tenacity", "Enter your tenacity:\n")
-		agility = getAttribute("Agility", "Enter your agility:\n")
-		luck = getAttribute("Luck", "Enter your luck:\n")
-		charisma = getAttribute("Charisma", "Enter your charisma:\n")
-
-		total := strength + dexterity + tenacity + agility + luck + charisma
-
-		fmt.Printf("\nTotal attribute points used: %d/%d\n",
-			total, availableAttributePoints)
-
-		if total == availableAttributePoints {
-			break
-		}
-
-		if total > availableAttributePoints {
-			fmt.Printf(
-				"You used too many attribute points! Maximum allowed is %d.\nPlease re-enter your attributes.\n\n",
-				availableAttributePoints,
-			)
-		}
-
-		if total < availableAttributePoints {
-			fmt.Printf(
-				"You didn't asign enough attribute points! The quantity allowed is %d.\nPlease re-enter your attributes.\n\n",
-				availableAttributePoints,
-			)
-		}
-		
-	}
-
-	defaultMeleeWeapon, err := NewWeapon(
-		"Stick",
-		strength+1,
-		Melee,
-		Blunt,
-	)
-	if err != nil {
-		fmt.Println("Could not create default melee weapon:", err)
-		return
-	}
-
-	defaultRangedWeapon, err := NewWeapon(
-		"Pebbles",
-		dexterity+1,
-		Ranged,
-		Throwing,
-	)
-	if err != nil {
-		fmt.Println("Could not create default ranged weapon:", err)
-		return
-	}
-
-	player := Character{
-		Name:                   name,
-		Strength:               strength,
-		Dexterity:              dexterity,
-		Tenacity:               tenacity,
-		Agility:                agility,
-		Luck:                   luck,
-		Charisma:               charisma,
-		MaxHitpoints:           int(tenacity) * 5,
-		CurrentHitpoints:       (int(tenacity) * 5) / 2,
-		Experience:             0,
-		Level:                  1,
-		ExperienceToNextLevel:  50,
-		MeleeWeapon:            defaultMeleeWeapon,
-		RangedWeapon:           defaultRangedWeapon,
-	}
-
-	fmt.Println("Your adventure starts now, get ready...")
-
-	// Waits three seconds to build suspense
-	time.Sleep(3 * time.Second)
-
-	fmt.Println("It's a sunny summer morning in what by all looks is the middle of a particularly overgrown fallow field, you are awaken from your slumber by a loud noise in the distance coming from the North")
-
-	var choice string
-
-	fmt.Println("Do you go North or South?")
-
-	for {
-		fmt.Scanln(&choice)
-
-		// We convert the input to lowercase to avoid any issues
-		choice = strings.ToLower(choice)
-
-		if choice == "north" {
-			decisionNorth(&player)
-			break
-		} else if choice == "south" {
-			decisionSouth(&player)
-			break
-		} else {
-			fmt.Println("You hesitate, unable to choose.\n")
-			fmt.Println("Please enter either North or South.\n")
-		}
-
-	}
-
-	if player.CurrentHitpoints <= 0 {
-		fmt.Printf("%s is defeated!\n", player.Name)
-		os.Exit(0)
-	}
-}
-
-// Used by rat in func decisionNorth(player *Character)
-// TODO to use the function instead
-var claws = Weapon{
-	Name:    "Claws",
-	Damage:  strength,
-	Type:    Melee,
-	Subtype: Bladed,
-}
-
-func decisionNorth(player *Character) {
-	fmt.Println("You head North towards the sound...")
-
-	time.Sleep(2 * time.Second)
-
-	rat := Character{
-		Name:        "Rat",
-		Strength:    1,
-		Tenacity:    2,
-		Agility:     1,
-		Luck:        1,
-		Charisma:    1,
-		MeleeWeapon: claws,
-	}
-	rat.MaxHitpoints = int(rat.Tenacity) * 5
-	rat.CurrentHitpoints = (int(rat.Tenacity) * 5)
-
-	fmt.Println("A giant rat jumps out of the grass! It looks angry...")
-
-	time.Sleep(2 * time.Second)
-
-	combat(player, &rat, 2)
-
-	// TODO elaborate
-}
-
-// Used by Xavier in func decisionSouth(player *Character)
-// TODO to use the function instead
-var hoe = Weapon{
-	Name:    "Hoe",
-	Damage:  strength + 1,
-	Type:    Melee,
-	Subtype: Blunt,
-}
-
-func decisionSouth(player *Character) {
-	fmt.Println("You head South into the tall grass...")
-
-	time.Sleep(2 * time.Second)
-
-	xavier := Character{
-		Name:        "Xavier",
-		Strength:    4,
-		Dexterity:   4,
-		Tenacity:    4,
-		Agility:     4,
-		Luck:        4,
-		Charisma:    2,
-		MeleeWeapon: hoe,
-	}
-
-	fmt.Println("You find a tall bald man, almost as big as the cow next to him, he's resting next to a water faucet. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
-	
-	time.Sleep(time.Second)
-	
-	fmt.Println("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
-
-	// TODO standardize scanners usage
-	scanner := bufio.NewScanner(os.Stdin)
-
-	for {
-		scanner.Scan()
-		choice := strings.ToLower(strings.TrimSpace(scanner.Text()))
-	
-		if choice == "1" || choice == "ask where are we" {
-
-			askXavierWhereWeAre()
-
-			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
-
-			for {
-				scanner.Scan()
-				choiceA := strings.ToLower(strings.TrimSpace(scanner.Text()))
-
-				if choiceA == "1" || choiceA == "ask for directions" {
-					
-					askXavierForDirections()
-
-					break
-
-				} else if choiceA == "2" || choiceA == "ask if you can drink from the faucet" {
-
-					askXavierIfYouCanDrinkFromTheFaucet(player, &xavier)
-
-					break
-					
-				} else {
-					fmt.Println("You hesitate, unable to choose.\n")
-					fmt.Println("Please enter either \"1\" / \"ask for directions\" or \"2\" / \"ask if you can drink from the faucet\".\n")
-				}
-
-			}
-
-			break
-
-		} else if choice == "2" || choice == "say nothing" {
-
-			sayNothingToXavier()
-
-			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet \n 3. ask where are we \n 4. Continue to say nothing")
-
-			sayNothingLoop:
-				for {
-					scanner.Scan()
-					choiceB := strings.ToLower(strings.TrimSpace(scanner.Text()))
-			
-					switch choiceB {
-					case "1", "ask for directions":
-						askXavierForDirections()
-						break sayNothingLoop
-			
-					case "2", "ask if you can drink from the faucet":
-						askXavierIfYouCanDrinkFromTheFaucet(player, &xavier)
-						break sayNothingLoop
-			
-					case "3", "ask where are we":
-						askXavierWhereWeAre()
-						break sayNothingLoop
-			
-					case "4", "continue to say nothing":
-						continueToSayNothingToXavier()
-						break sayNothingLoop
-			
-					default:
 						fmt.Println("You hesitate, unable to choose.\n")
 						fmt.Println("Please enter either \"1\" / \"ask for directions\", \"2\" / \"ask if you can drink from the faucet\", \"3\" / \"ask where are we\" or \"4\" / \"continue to say nothing\".\n")
 					}
@@ -403,26 +41,30 @@ func decisionSouth(player *Character) {
 	}
 }
 
-// Used by Raven in func decisionSouthDecisionSouth()
-// TODO to use the function instead
-var ironDagger = Weapon{
-	Name:    "Hoe",
-	Damage:  strength + 2,
-	Type:    Melee,
-	Subtype: Shooting,
-}
-
 func decisionSouthDecisionSouth(player *Character) {
 
+	// Used by Raven
+	ironDagger, err := NewWeapon(
+		"Iron Dagger",
+		strength + 2,
+		Melee,
+		Bladed,
+	)
+	if err != nil {
+		fmt.Println("Could not create Raven's iron dagger:", err)
+		return
+	}
+
 	raven := Character{
-		Name:        "Raven",
-		Strength:    3,
-		Dexterity:   3,
-		Tenacity:    3,
-		Agility:     3,
-		Luck:        3,
-		Charisma:    3,
-		MeleeWeapon: ironDagger,
+		Name:             "Raven",
+		Strength:         3,
+		Dexterity:        3,
+		Tenacity:         3,
+		Agility:          3,
+		Luck:             3,
+		Charisma:         3,
+		MeleeWeapon:      ironDagger,
+		PossesivePronoun: "her",
 	}
 
 	if game.learnedMudLocation {
@@ -573,8 +215,6 @@ func combat(player *Character, enemy *Character, distance int) {
 
 	var enemyWeapon Weapon
 
-	// TODO cleanup into a single "if / else if" chain
-	// TODO check compiler
 	switch {
 		case enemy.MeleeWeapon.weaponIsEmpty():
     		enemyWeapon = enemy.RangedWeapon
@@ -607,7 +247,8 @@ func combat(player *Character, enemy *Character, distance int) {
 	for player.CurrentHitpoints > 0 && enemy.CurrentHitpoints > 0 {
 
 		// First character attacks
-		fmt.Printf("%s attacks %s!\n", first.Name, second.Name)
+		// TODO gender
+		fmt.Printf("%s attacks %s with his %s!\n", first.Name, second.Name, firstWeapon.Name)
 
 		var rollEvasionSecondCharacter uint8 = uint8(rand.Intn(100))
 		var rollCriticalStrikeFirstCharacter uint8 = uint8(rand.Intn(100))
@@ -636,7 +277,8 @@ func combat(player *Character, enemy *Character, distance int) {
 		time.Sleep(time.Second)
 
 		// Second character attacks
-		fmt.Printf("%s attacks %s!\n", second.Name, first.Name)
+		// TODO gender
+		fmt.Printf("%s attacks %s with his %s!\n", second.Name, first.Name, secondWeapon.Name)
 
 		var rollEvasionFirstCharacter uint8 = uint8(rand.Intn(100))
 		var rollCriticalStrikeSecondCharacter uint8 = uint8(rand.Intn(100))
