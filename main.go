@@ -62,7 +62,9 @@ func NewWeapon(name string, damage uint8, t WeaponType, s WeaponSubtype) (Weapon
 	return w, nil
 }
 
+// TODO proper casing and naming
 var name string
+var playerPossesivePronoun string
 var strength uint8
 var dexterity uint8
 var tenacity uint8
@@ -73,6 +75,7 @@ const availableAttributePoints uint8 = 30
 
 type Character struct {
 	Name                    string
+	PossesivePronoun        string
 	Strength                uint8
 	Dexterity               uint8
 	Tenacity                uint8
@@ -86,7 +89,6 @@ type Character struct {
 	ExperienceToNextLevel   int
     MeleeWeapon             Weapon
     RangedWeapon            Weapon
-	PossesivePronoun        string
 }
 
 func (w Weapon) weaponIsEmpty() bool {
@@ -118,6 +120,27 @@ func main() {
 	fmt.Print("Enter your name:\n")
 	fmt.Scanln(&name)
 	fmt.Println("Hello,", name)
+
+	fmt.Print("Are you male or female?:\n")
+	var selectedGender string
+
+	// Keep asking until the user responds male or female
+	for {
+		fmt.Scanln(&selectedGender)
+
+		if selectedGender == "male" {
+			playerPossesivePronoun = "his"
+			break
+		}else if selectedGender == "female"{
+			playerPossesivePronoun = "her"
+			break
+		}
+
+		fmt.Print("Please, introduce either \"male\" or \"female\":\n")
+		
+	}
+
+
 
 	// Keep asking until total points are valid
 	for {
@@ -175,8 +198,10 @@ func main() {
 		return
 	}
 
+	// TODO proper casing and naming
 	player := Character{
 		Name:                   name,
+		PossesivePronoun:       playerPossesivePronoun,
 		Strength:               strength,
 		Dexterity:              dexterity,
 		Tenacity:               tenacity,
@@ -190,7 +215,6 @@ func main() {
 		ExperienceToNextLevel:  50,
 		MeleeWeapon:            defaultMeleeWeapon,
 		RangedWeapon:           defaultRangedWeapon,
-		PossesivePronoun:       "his", // TODO allow user selection
 	}
 
 	fmt.Println("Your adventure starts now, get ready...")
@@ -244,13 +268,13 @@ func decisionNorth(player *Character) {
 
 	rat := Character{
 		Name:             "Rat",
+		PossesivePronoun: "its",
 		Strength:         1,
 		Tenacity:         2,
 		Agility:          1,
 		Luck:             1,
 		Charisma:         1,
 		MeleeWeapon:      claws,
-		PossesivePronoun: "its",
 	}
 	rat.MaxHitpoints = int(rat.Tenacity) * 5
 	rat.CurrentHitpoints = (int(rat.Tenacity) * 5)
@@ -283,6 +307,7 @@ func decisionSouth(player *Character) {
 
 	xavier := Character{
 		Name:             "Xavier",
+		PossesivePronoun: "his",
 		Strength:         4,
 		Dexterity:        4,
 		Tenacity:         4,
@@ -290,7 +315,6 @@ func decisionSouth(player *Character) {
 		Luck:             4,
 		Charisma:         2,
 		MeleeWeapon:      hoe,
-		PossesivePronoun: "his",
 	}
 
 	fmt.Println("You head South into the tall grass...")
@@ -429,6 +453,7 @@ func decisionSouthDecisionSouth(player *Character) {
 
 	raven := Character{
 		Name:             "Raven",
+		PossesivePronoun: "her",
 		Strength:         3,
 		Dexterity:        3,
 		Tenacity:         3,
@@ -436,7 +461,6 @@ func decisionSouthDecisionSouth(player *Character) {
 		Luck:             3,
 		Charisma:         3,
 		MeleeWeapon:      ironDagger,
-		PossesivePronoun: "her",
 	}
 
 	if game.learnedMudLocation {
@@ -619,8 +643,7 @@ func combat(player *Character, enemy *Character, distance int) {
 	for player.CurrentHitpoints > 0 && enemy.CurrentHitpoints > 0 {
 
 		// First character attacks
-		// TODO gender
-		fmt.Printf("%s attacks %s with his %s!\n", first.Name, second.Name, firstWeapon.Name)
+		fmt.Printf("%s attacks %s with %s %s!\n", first.Name, second.Name, first.PossesivePronoun, firstWeapon.Name)
 
 		var rollEvasionSecondCharacter uint8 = uint8(rand.Intn(100))
 		var rollCriticalStrikeFirstCharacter uint8 = uint8(rand.Intn(100))
@@ -649,8 +672,7 @@ func combat(player *Character, enemy *Character, distance int) {
 		time.Sleep(time.Second)
 
 		// Second character attacks
-		// TODO gender
-		fmt.Printf("%s attacks %s with his %s!\n", second.Name, first.Name, secondWeapon.Name)
+		fmt.Printf("%s attacks %s with %s %s!\n", second.Name, first.Name, second.PossesivePronoun, secondWeapon.Name)
 
 		var rollEvasionFirstCharacter uint8 = uint8(rand.Intn(100))
 		var rollCriticalStrikeSecondCharacter uint8 = uint8(rand.Intn(100))
