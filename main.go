@@ -63,14 +63,14 @@ func NewWeapon(name string, damage uint8, t WeaponType, s WeaponSubtype) (Weapon
 }
 
 // TODO proper casing and naming
-var name string
+var playerName string
 var playerPossesivePronoun string
-var strength uint8
-var dexterity uint8
-var tenacity uint8
-var agility uint8
-var luck uint8
-var charisma uint8
+var playerStrength uint8
+var playerDexterity uint8
+var playerTenacity uint8
+var playerAgility uint8
+var playerLuck uint8
+var playerCharisma uint8
 const availableAttributePoints uint8 = 30
 
 type Character struct {
@@ -118,8 +118,8 @@ func getAttribute(statName string, prompt string) uint8 {
 
 func main() {
 	fmt.Print("Enter your name:\n")
-	fmt.Scanln(&name)
-	fmt.Println("Hello,", name)
+	fmt.Scanln(&playerName)
+	fmt.Println("Hello,", playerName)
 
 	fmt.Print("Are you male or female?:\n")
 	var selectedGender string
@@ -140,18 +140,16 @@ func main() {
 		
 	}
 
-
-
 	// Keep asking until total points are valid
 	for {
-		strength = getAttribute("Strength", "Enter your strength:\n")
-		dexterity = getAttribute("Dexterity", "Enter your dexterity:\n")
-		tenacity = getAttribute("Tenacity", "Enter your tenacity:\n")
-		agility = getAttribute("Agility", "Enter your agility:\n")
-		luck = getAttribute("Luck", "Enter your luck:\n")
-		charisma = getAttribute("Charisma", "Enter your charisma:\n")
+		playerStrength = getAttribute("Strength", "Enter your strength:\n")
+		playerDexterity = getAttribute("Dexterity", "Enter your dexterity:\n")
+		playerTenacity = getAttribute("Tenacity", "Enter your tenacity:\n")
+		playerAgility = getAttribute("Agility", "Enter your agility:\n")
+		playerLuck = getAttribute("Luck", "Enter your luck:\n")
+		playerCharisma = getAttribute("Charisma", "Enter your charisma:\n")
 
-		total := strength + dexterity + tenacity + agility + luck + charisma
+		total := playerStrength + playerDexterity + playerTenacity + playerAgility + playerLuck + playerCharisma
 
 		fmt.Printf("\nTotal attribute points used: %d/%d\n",
 			total, availableAttributePoints)
@@ -178,7 +176,7 @@ func main() {
 
 	defaultMeleeWeapon, err := NewWeapon(
 		"Stick",
-		strength+1,
+		playerStrength + 1,
 		Melee,
 		Blunt,
 	)
@@ -189,7 +187,7 @@ func main() {
 
 	defaultRangedWeapon, err := NewWeapon(
 		"Pebbles",
-		dexterity+1,
+		playerDexterity + 1,
 		Ranged,
 		Throwing,
 	)
@@ -200,16 +198,16 @@ func main() {
 
 	// TODO proper casing and naming
 	player := Character{
-		Name:                   name,
+		Name:                   playerName,
 		PossesivePronoun:       playerPossesivePronoun,
-		Strength:               strength,
-		Dexterity:              dexterity,
-		Tenacity:               tenacity,
-		Agility:                agility,
-		Luck:                   luck,
-		Charisma:               charisma,
-		MaxHitpoints:           int(tenacity) * 5,
-		CurrentHitpoints:       (int(tenacity) * 5) / 2,
+		Strength:               playerStrength,
+		Dexterity:              playerDexterity,
+		Tenacity:               playerTenacity,
+		Agility:                playerAgility,
+		Luck:                   playerLuck,
+		Charisma:               playerCharisma,
+		MaxHitpoints:           int(playerTenacity) * 5,
+		CurrentHitpoints:       (int(playerTenacity) * 5) / 2,
 		Experience:             0,
 		Level:                  1,
 		ExperienceToNextLevel:  50,
@@ -254,10 +252,12 @@ func main() {
 }
 
 func decisionNorth(player *Character) {
+	const ratStrength = 1
+
 	// Used by the rat
 	claws, err := NewWeapon(
 		"Claws",
-		strength,
+		ratStrength,
 		Melee,
 		Bladed,
 	)
@@ -269,7 +269,7 @@ func decisionNorth(player *Character) {
 	rat := Character{
 		Name:             "Rat",
 		PossesivePronoun: "its",
-		Strength:         1,
+		Strength:         ratStrength,
 		Tenacity:         2,
 		Agility:          1,
 		Luck:             1,
@@ -293,10 +293,12 @@ func decisionNorth(player *Character) {
 }
 
 func decisionSouth(player *Character) {
+	const xavierStrength = 4
+
 	// Used by Xavier
 	hoe, err := NewWeapon(
 		"Hoe",
-		strength + 1,
+		xavierStrength + 1,
 		Melee,
 		Blunt,
 	)
@@ -438,11 +440,12 @@ func decisionSouth(player *Character) {
 }
 
 func decisionSouthDecisionSouth(player *Character) {
+	const ravenStrength = 3
 
 	// Used by Raven
 	ironDagger, err := NewWeapon(
 		"Iron Dagger",
-		strength + 2,
+		ravenStrength + 2,
 		Melee,
 		Bladed,
 	)
