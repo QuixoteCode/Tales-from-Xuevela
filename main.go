@@ -62,7 +62,6 @@ func NewWeapon(name string, damage uint8, t WeaponType, s WeaponSubtype) (Weapon
 	return w, nil
 }
 
-// TODO proper casing and naming
 var playerName string
 var playerPossesivePronoun string
 var playerStrength uint8
@@ -114,6 +113,67 @@ func getAttribute(statName string, prompt string) uint8 {
 				fmt.Printf("%s cannot be lower than 0. Try again.\n", statName)
 		}
 	}
+}
+
+package main
+
+type Item struct {
+	Name     string
+	Quantity int
+}
+
+type Inventory struct {
+	Items []Item
+}
+
+// It increases the quantity of an existing item or adds a new item to the inventory if it doesnâ€™t exist
+func (inventory *Inventory) Add(name string, quantity int) {
+	for i := range inventory.Items {
+		if inventory.Items[i].Name == name {
+			inventory.Items[i].Quantity += quantity
+			return
+		}
+	}
+
+	inventory.Items = append(inventory.Items, Item{
+		Name:     name,
+		Quantity: quantity,
+	})
+}
+
+// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenâ€™t enough units
+func (inventory *Inventory) Remove(name string, quantity int) bool {
+	for i := range inventory.Items {
+		if inventory.Items[i].Name == name {
+			if inventory.Items[i].Quantity < quantity {
+				return false
+			}
+
+			inventory.Items[i].Quantity -= quantity
+
+			if inventory.Items[i].Quantity == 0 {
+				inventory.Items = append(
+					inventory.Items[:i],
+					inventory.Items[i+1:]...,
+				)
+			}
+
+			return true
+		}
+	}
+
+	return false
+}
+
+// Searches the inventory for an item by name
+func (inventory *Inventory) Find(name string) *Item {
+	for i := range inventory.Items {
+		if inventory.Items[i].Name == name {
+			return &inventory.Items[i]
+		}
+	}
+
+	return nil
 }
 
 func main() {
@@ -196,7 +256,6 @@ func main() {
 		return
 	}
 
-	// TODO proper casing and naming
 	player := Character{
 		Name:                   playerName,
 		PossesivePronoun:       playerPossesivePronoun,
@@ -289,6 +348,24 @@ func decisionNorth(player *Character) {
 
 	combat(player, &rat, 2)
 
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("Phew! That was close")
+
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("In front of you, a dense forest raises, the rays of the sun struggle to pass through the unforgiving mass of leaves")
+
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("Something on the floor catches a glimpse of your eye. You bend your back to crouch down and look at it more closely")
+
+	time.Sleep(2 * time.Second)
+
+	// Vara = roughly 0.8359 meters
+	fmt.Println("It is a reel of rope, you feel like it will be useful later on, it has been added to your inventory, it seems to be roughly 3 varas long")
+
+	inventory.Add("Rope", 3)
 	// TODO elaborate
 }
 
@@ -573,7 +650,6 @@ func continueToSayNothingToXavier() {
 	time.Sleep(time.Second)
 }
 
-// TODO implement weapons
 func combat(player *Character, enemy *Character, distance int) {
 
 	var chosenWeapon string
