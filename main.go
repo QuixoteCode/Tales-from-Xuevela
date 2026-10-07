@@ -115,8 +115,6 @@ func getAttribute(statName string, prompt string) uint8 {
 	}
 }
 
-package main
-
 type Item struct {
 	Name     string
 	Quantity int
@@ -126,7 +124,7 @@ type Inventory struct {
 	Items []Item
 }
 
-// It increases the quantity of an existing item or adds a new item to the inventory if it doesnâ€™t exist
+// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃ¢â‚¬â„¢t exist
 func (inventory *Inventory) Add(name string, quantity int) {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -141,7 +139,7 @@ func (inventory *Inventory) Add(name string, quantity int) {
 	})
 }
 
-// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenâ€™t enough units
+// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃ¢â‚¬â„¢t enough units
 func (inventory *Inventory) Remove(name string, quantity int) bool {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -362,11 +360,55 @@ func decisionNorth(player *Character) {
 
 	time.Sleep(2 * time.Second)
 
-	// Vara = roughly 0.8359 meters
-	fmt.Println("It is a reel of rope, you feel like it will be useful later on, it has been added to your inventory, it seems to be roughly 3 varas long")
+	// Vara = roughly 0.8359 meters, 12 varas = roughly 10 meters, at 6 meters or taller virtually all falls are dangerous (no matter how well one lands), this amount of rope will allow the player to realistically get over a dangerous fall
+	fmt.Println("It is a reel of rope, you feel like it will be useful later on, it has been added to your inventory, it seems to be roughly 12 varas long")
 
-	inventory.Add("Rope", 3)
-	// TODO elaborate
+	// TODO fix: create an inventory instance, see compiler
+	inventory.Add("Rope", 12)
+
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("You continue walking and the forest gets denser and denser, you eventually reach a small clearing, there you perceive a well-trodden path through the grass which is surrounded by broken crates and barrels deformed as if they had imploded and all manner of junk")
+
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("Do you continue walking in the same direction or deviate towards the well-trodden path?")
+
+	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		scanner.Scan()
+		choice := strings.ToLower(strings.TrimSpace(scanner.Text()))
+	
+		if choice == "1" || choice == "continue walking in the same direction" {
+
+			decisionNorthSameDirection()
+
+			break
+
+		} else if choice == "2" || choice == "deviate towards the well-trodden path" {
+
+			decisionNorthPath()
+
+			break
+
+		} else {
+
+			fmt.Println("You hesitate, unable to choose.\n")
+			fmt.Println("Please enter either \"1\" / \"continue walking in the same direction\" or \"2\" / \"deviate towards the well-trodden path\".\n")
+
+		}
+	}
+
+}
+
+func decisionNorthSameDirection() {
+
+}
+
+func decisionNorthPath() {
+
 }
 
 func decisionSouth(player *Character) {
