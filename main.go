@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"bufio"
+	"display"
 )
 
 type WeaponType int
@@ -88,6 +89,7 @@ type Character struct {
 	ExperienceToNextLevel   int
     MeleeWeapon             Weapon
     RangedWeapon            Weapon
+	Inventory               Inventory
 }
 
 func (w Weapon) weaponIsEmpty() bool {
@@ -124,7 +126,7 @@ type Inventory struct {
 	Items []Item
 }
 
-// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃ¢â‚¬â„¢t exist
+// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t exist
 func (inventory *Inventory) Add(name string, quantity int) {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -139,7 +141,7 @@ func (inventory *Inventory) Add(name string, quantity int) {
 	})
 }
 
-// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃ¢â‚¬â„¢t enough units
+// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t enough units
 func (inventory *Inventory) Remove(name string, quantity int) bool {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -173,7 +175,24 @@ func (inventory *Inventory) Find(name string) *Item {
 
 	return nil
 }
+func main() {
+    // Keep this goroutine on the main OS thread.
+    // Cocoa UI initialization should happen on that thread.
+    runtime.LockOSThread()
 
+    // Create the native window.
+    display.OpenWindow()
+
+    // Display some sample story text.
+    display.Println("Your adventure starts now!")
+    display.Println("")
+    display.Println("It is a sunny summer morning.")
+    display.Println("A loud noise comes from the North.")
+
+    // Start Cocoa's event loop to keep the window responsive.
+    display.Run()
+}
+/*
 func main() {
 	fmt.Print("Enter your name:\n")
 	fmt.Scanln(&playerName)
@@ -364,7 +383,7 @@ func decisionNorth(player *Character) {
 	fmt.Println("It is a reel of rope, you feel like it will be useful later on, it has been added to your inventory, it seems to be roughly 12 varas long")
 
 	// TODO fix: create an inventory instance, see compiler
-	inventory.Add("Rope", 12)
+	player.Inventory.Add("Rope", 12)
 
 	time.Sleep(2 * time.Second)
 
@@ -402,6 +421,7 @@ func decisionNorth(player *Character) {
 	}
 
 }
+	*/
 
 func decisionNorthSameDirection() {
 
