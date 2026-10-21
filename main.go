@@ -7,7 +7,8 @@ import (
 	"math/rand"
 	"os"
 	"bufio"
-	"display"
+	"runtime"
+	"Tales-from-Xuevela-main/display"
 )
 
 type WeaponType int
@@ -101,6 +102,7 @@ func getAttribute(statName string, prompt string) uint8 {
 
 	// Checks whether the character attribute is 10 or lower and 0 or higher
 	for {
+		// TODO change for window-mac.go's functions
 		fmt.Print(prompt)
 		fmt.Scanln(&value)
 
@@ -126,7 +128,7 @@ type Inventory struct {
 	Items []Item
 }
 
-// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t exist
+// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢t exist
 func (inventory *Inventory) Add(name string, quantity int) {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -141,7 +143,7 @@ func (inventory *Inventory) Add(name string, quantity int) {
 	})
 }
 
-// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t enough units
+// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢t enough units
 func (inventory *Inventory) Remove(name string, quantity int) bool {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -175,6 +177,8 @@ func (inventory *Inventory) Find(name string) *Item {
 
 	return nil
 }
+
+/*
 func main() {
     // Keep this goroutine on the main OS thread.
     // Cocoa UI initialization should happen on that thread.
@@ -184,129 +188,136 @@ func main() {
     display.OpenWindow()
 
     // Display some sample story text.
-    display.Println("Your adventure starts now!")
-    display.Println("")
-    display.Println("It is a sunny summer morning.")
-    display.Println("A loud noise comes from the North.")
+    display.Printdisplay("Your adventure starts now!")
+    display.Printdisplay("")
+    display.Printdisplay("It is a sunny summer morning.")
+    display.Printdisplay("A loud noise comes from the North.")
 
-    // Start Cocoa's event loop to keep the window responsive.
-    display.Run()
+	var selectedGender string
+	selectedGender = strings.ToLower(display.Input("Are you male or female:"))
+	display.Printdisplay(selectedGender)
+
+	// Start Cocoa's event loop to keep the window responsive.
+	display.Run()
 }
-/*
-func main() {
-	fmt.Print("Enter your name:\n")
-	fmt.Scanln(&playerName)
-	fmt.Println("Hello,", playerName)
+*/
 
-	fmt.Print("Are you male or female?:\n")
+func main() {
+    // Keep this goroutine on the main OS thread.
+    // Cocoa UI initialization should happen on that thread.
+    runtime.LockOSThread()
+
+    // Create the native window.
+    display.OpenWindow()
+	
+	display.Printdisplay("Enter your name:")
+	playerName = display.Input("Enter your name:")
+	display.Printdisplay("Hello, " + playerName)
+
+	display.Printdisplay("Are you male or female:")
 	var selectedGender string
 
 	// Keep asking until the user responds male or female
 	for {
-		fmt.Scanln(&selectedGender)
+		selectedGender = strings.ToLower(display.Input("Are you male or female:"))
 
 		if selectedGender == "male" {
 			playerPossesivePronoun = "his"
 			break
-		}else if selectedGender == "female"{
+		} else if selectedGender == "female" {
 			playerPossesivePronoun = "her"
 			break
 		}
 
-		fmt.Print("Please, introduce either \"male\" or \"female\":\n")
-		
+		display.Printdisplay("Please, introduce either \"male\" or \"female\":")
 	}
 
 	// Keep asking until total points are valid
 	for {
-		playerStrength = getAttribute("Strength", "Enter your strength:\n")
-		playerDexterity = getAttribute("Dexterity", "Enter your dexterity:\n")
-		playerTenacity = getAttribute("Tenacity", "Enter your tenacity:\n")
-		playerAgility = getAttribute("Agility", "Enter your agility:\n")
-		playerLuck = getAttribute("Luck", "Enter your luck:\n")
-		playerCharisma = getAttribute("Charisma", "Enter your charisma:\n")
+		playerStrength = getAttribute("Strength", "Enter your strength:")
+		playerDexterity = getAttribute("Dexterity", "Enter your dexterity:")
+		playerTenacity = getAttribute("Tenacity", "Enter your tenacity:")
+		playerAgility = getAttribute("Agility", "Enter your agility:")
+		playerLuck = getAttribute("Luck", "Enter your luck:")
+		playerCharisma = getAttribute("Charisma", "Enter your charisma:")
 
 		total := playerStrength + playerDexterity + playerTenacity + playerAgility + playerLuck + playerCharisma
 
-		fmt.Printf("\nTotal attribute points used: %d/%d\n",
-			total, availableAttributePoints)
+		display.Printdisplay(fmt.Sprintf("\nTotal attribute points used: %d/%d\n",
+			total, availableAttributePoints))
 
 		if total == availableAttributePoints {
 			break
 		}
 
 		if total > availableAttributePoints {
-			fmt.Printf(
+			display.Printdisplay(fmt.Sprintf(
 				"You used too many attribute points! Maximum allowed is %d.\nPlease re-enter your attributes.\n\n",
 				availableAttributePoints,
-			)
+			))
 		}
 
 		if total < availableAttributePoints {
-			fmt.Printf(
+			display.Printdisplay(fmt.Sprintf(
 				"You didn't asign enough attribute points! The quantity allowed is %d.\nPlease re-enter your attributes.\n\n",
 				availableAttributePoints,
-			)
+			))
 		}
-		
 	}
 
 	defaultMeleeWeapon, err := NewWeapon(
 		"Stick",
-		playerStrength + 1,
+		playerStrength+1,
 		Melee,
 		Blunt,
 	)
 	if err != nil {
-		fmt.Println("Could not create default melee weapon:", err)
+		display.Printdisplay("Could not create default melee weapon: " + err.Error())
 		return
 	}
 
 	defaultRangedWeapon, err := NewWeapon(
 		"Pebbles",
-		playerDexterity + 1,
+		playerDexterity+1,
 		Ranged,
 		Throwing,
 	)
 	if err != nil {
-		fmt.Println("Could not create default ranged weapon:", err)
+		display.Printdisplay("Could not create default ranged weapon: " + err.Error())
 		return
 	}
 
 	player := Character{
-		Name:                   playerName,
-		PossesivePronoun:       playerPossesivePronoun,
-		Strength:               playerStrength,
-		Dexterity:              playerDexterity,
-		Tenacity:               playerTenacity,
-		Agility:                playerAgility,
-		Luck:                   playerLuck,
-		Charisma:               playerCharisma,
-		MaxHitpoints:           int(playerTenacity) * 5,
-		CurrentHitpoints:       (int(playerTenacity) * 5) / 2,
-		Experience:             0,
-		Level:                  1,
-		ExperienceToNextLevel:  50,
-		MeleeWeapon:            defaultMeleeWeapon,
-		RangedWeapon:           defaultRangedWeapon,
+		Name:                    playerName,
+		PossesivePronoun:        playerPossesivePronoun,
+		Strength:                playerStrength,
+		Dexterity:               playerDexterity,
+		Tenacity:                playerTenacity,
+		Agility:                 playerAgility,
+		Luck:                    playerLuck,
+		Charisma:                playerCharisma,
+		MaxHitpoints:            int(playerTenacity) * 5,
+		CurrentHitpoints:        (int(playerTenacity) * 5) / 2,
+		Experience:              0,
+		Level:                   1,
+		ExperienceToNextLevel:   50,
+		MeleeWeapon:             defaultMeleeWeapon,
+		RangedWeapon:            defaultRangedWeapon,
 	}
 
-	fmt.Println("Your adventure starts now, get ready...")
+	display.Printdisplay("Your adventure starts now, get ready...")
 
 	// Waits three seconds to build suspense
 	time.Sleep(3 * time.Second)
 
-	fmt.Println("It's a sunny summer morning in what by all looks is the middle of a particularly overgrown fallow field, you are awaken from your slumber by a loud noise in the distance coming from the North")
+	display.Printdisplay("It's a sunny summer morning in what by all looks is the middle of a particularly overgrown fallow field, you are awaken from your slumber by a loud noise in the distance coming from the North")
 
 	var choice string
-
-	fmt.Println("Do you go North or South?")
+	display.Printdisplay("Do you go North or South?")
 
 	for {
-		fmt.Scanln(&choice)
-
 		// We convert the input to lowercase to avoid any issues
-		choice = strings.ToLower(choice)
+		choice = strings.ToLower(display.Input("Do you go North or South?"))
 
 		if choice == "north" {
 			decisionNorth(&player)
@@ -315,18 +326,21 @@ func main() {
 			decisionSouth(&player)
 			break
 		} else {
-			fmt.Println("You hesitate, unable to choose.\n")
-			fmt.Println("Please enter either North or South.\n")
+			display.Printdisplay("You hesitate, unable to choose.\n")
+			display.Printdisplay("Please enter either North or South.\n")
 		}
-
 	}
 
 	if player.CurrentHitpoints <= 0 {
-		fmt.Printf("%s is defeated!\n", player.Name)
+		display.Printdisplay(fmt.Sprintf("%s is defeated!\n", player.Name))
 		os.Exit(0)
 	}
+
+	// Start Cocoa's event loop to keep the window responsive.
+	display.Run()
 }
 
+/*
 func decisionNorth(player *Character) {
 	const ratStrength = 1
 

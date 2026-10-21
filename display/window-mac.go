@@ -114,6 +114,24 @@ static void appendNativeText(const char *message) {
 static void runNativeApplication(void) {
     [NSApp run];
 }
+
+// Show a modal prompt and return the user's typed text.
+static const char *promptNativeText(const char *prompt) {
+    @autoreleasepool {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText:[NSString stringWithUTF8String:prompt]];
+        [alert addButtonWithTitle:@"OK"];
+
+        NSTextField *field = [[NSTextField alloc]
+            initWithFrame:NSMakeRect(0, 0, 200, 24)];
+        [alert setAccessoryView:field];
+
+        [alert runModal];
+
+        NSString *result = [field stringValue];
+        return strdup([result UTF8String]);
+    }
+}
 */
 import "C"
 
@@ -127,7 +145,7 @@ func OpenWindow() {
 
 // Println appends a line of text to the window.
 // This initial version assumes it is called on the UI thread.
-func Println(message string) {
+func Printdisplay(message string) {
     cMessage := C.CString(message)
     defer C.free(unsafe.Pointer(cMessage))
 
@@ -138,4 +156,15 @@ func Println(message string) {
 // Call this after creating the window.
 func Run() {
     C.runNativeApplication()
+}
+
+// Input shows a modal prompt and returns the user's response.
+func Input(prompt string) string {
+	cPrompt := C.CString(prompt)
+	defer C.free(unsafe.Pointer(cPrompt))
+
+	cResult := C.promptNativeText(cPrompt)
+	defer C.free(unsafe.Pointer(cResult))
+
+	return C.GoString(cResult)
 }
