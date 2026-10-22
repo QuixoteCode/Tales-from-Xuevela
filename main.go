@@ -111,10 +111,10 @@ func getAttribute(statName string, prompt string) uint8 {
 				return uint8(value)
 
 			case value > 10:
-				fmt.Printf("%s must be 10 or lower. Try again.\n", statName)
+				display.Printdisplay(fmt.Sprintf("%s must be 10 or lower. Try again.\n", statName))
 
 			case value < 0:
-				fmt.Printf("%s cannot be lower than 0. Try again.\n", statName)
+				display.Printdisplay(fmt.Sprintf("%s cannot be lower than 0. Try again.\n", statName))
 		}
 	}
 }
@@ -128,7 +128,7 @@ type Inventory struct {
 	Items []Item
 }
 
-// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢t exist
+// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢t exist
 func (inventory *Inventory) Add(name string, quantity int) {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -143,7 +143,7 @@ func (inventory *Inventory) Add(name string, quantity int) {
 	})
 }
 
-// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢t enough units
+// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢t enough units
 func (inventory *Inventory) Remove(name string, quantity int) bool {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -340,7 +340,6 @@ func main() {
 	display.Run()
 }
 
-/*
 func decisionNorth(player *Character) {
 	const ratStrength = 1
 
@@ -352,6 +351,7 @@ func decisionNorth(player *Character) {
 		Bladed,
 	)
 	if err != nil {
+		// Make sure to keep it as a fmt.Println() and not replace it with display.Printdisplay()
 		fmt.Println("Could not create rat's claws:", err)
 		return
 	}
@@ -369,11 +369,11 @@ func decisionNorth(player *Character) {
 	rat.MaxHitpoints = int(rat.Tenacity) * 5
 	rat.CurrentHitpoints = (int(rat.Tenacity) * 5)
 
-	fmt.Println("You head North towards the sound...")
+	display.Printdisplay("You head North towards the sound...")
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("A giant rat jumps out of the grass! It looks angry...")
+	display.Printdisplay("A giant rat jumps out of the grass! It looks angry...")
 
 	time.Sleep(2 * time.Second)
 
@@ -381,31 +381,31 @@ func decisionNorth(player *Character) {
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("Phew! That was close")
+	display.Printdisplay("Phew! That was close")
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("In front of you, a dense forest raises, the rays of the sun struggle to pass through the unforgiving mass of leaves")
+	display.Printdisplay("In front of you, a dense forest raises, the rays of the sun struggle to pass through the unforgiving mass of leaves")
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("Something on the floor catches a glimpse of your eye. You bend your back to crouch down and look at it more closely")
+	display.Printdisplay("Something on the floor catches a glimpse of your eye. You bend your back to crouch down and look at it more closely")
 
 	time.Sleep(2 * time.Second)
 
 	// Vara = roughly 0.8359 meters, 12 varas = roughly 10 meters, at 6 meters or taller virtually all falls are dangerous (no matter how well one lands), this amount of rope will allow the player to realistically get over a dangerous fall
-	fmt.Println("It is a reel of rope, you feel like it will be useful later on, it has been added to your inventory, it seems to be roughly 12 varas long")
+	display.Printdisplay("It is a reel of rope, you feel like it will be useful later on, it has been added to your inventory, it seems to be roughly 12 varas long")
 
 	// TODO fix: create an inventory instance, see compiler
 	player.Inventory.Add("Rope", 12)
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("You continue walking and the forest gets denser and denser, you eventually reach a small clearing, there you perceive a well-trodden path through the grass which is surrounded by broken crates and barrels deformed as if they had imploded and all manner of junk")
+	display.Printdisplay("You continue walking and the forest gets denser and denser, you eventually reach a small clearing, there you perceive a well-trodden path through the grass which is surrounded by broken crates and barrels deformed as if they had imploded and all manner of junk")
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("Do you continue walking in the same direction or deviate towards the well-trodden path?")
+	display.Printdisplay("Do you continue walking in the same direction or deviate towards the well-trodden path?")
 
 	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
 	scanner := bufio.NewScanner(os.Stdin)
@@ -428,14 +428,14 @@ func decisionNorth(player *Character) {
 
 		} else {
 
-			fmt.Println("You hesitate, unable to choose.\n")
-			fmt.Println("Please enter either \"1\" / \"continue walking in the same direction\" or \"2\" / \"deviate towards the well-trodden path\".\n")
+			display.Printdisplay("You hesitate, unable to choose.\n")
+			display.Printdisplay("Please enter either \"1\" / \"continue walking in the same direction\" or \"2\" / \"deviate towards the well-trodden path\".\n")
 
 		}
 	}
 
 }
-	*/
+
 
 func decisionNorthSameDirection() {
 
@@ -456,6 +456,7 @@ func decisionSouth(player *Character) {
 		Blunt,
 	)
 	if err != nil {
+		// Make sure to keep it as a fmt.Println() and not replace it with display.Printdisplay()
 		fmt.Println("Could not create Xavier's hoe:", err)
 		return
 	}
@@ -472,15 +473,15 @@ func decisionSouth(player *Character) {
 		MeleeWeapon:      hoe,
 	}
 
-	fmt.Println("You head South into the tall grass...")
+	display.Printdisplay("You head South into the tall grass...")
 
 	time.Sleep(2 * time.Second)
 
-	fmt.Println("You find a tall bald man, almost as big as the cow next to him, he's resting next to a water faucet. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
+	display.Printdisplay("You find a tall bald man, almost as big as the cow next to him, he's resting next to a water faucet. The bovine is slowly but firmly carrying a plow with its yoke, tilling a patch of land. The bald man notices your presence and looks at you, wide-eyed, clearly not recognising you")
 	
 	time.Sleep(time.Second)
 	
-	fmt.Println("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
+	display.Printdisplay("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
 
 	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
 	scanner := bufio.NewScanner(os.Stdin)
@@ -493,7 +494,7 @@ func decisionSouth(player *Character) {
 
 			askXavierWhereWeAre()
 
-			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
+			display.Printdisplay("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
 
 			for {
 				scanner.Scan()
@@ -512,8 +513,8 @@ func decisionSouth(player *Character) {
 					break
 					
 				} else {
-					fmt.Println("You hesitate, unable to choose.\n")
-					fmt.Println("Please enter either \"1\" / \"ask for directions\" or \"2\" / \"ask if you can drink from the faucet\".\n")
+					display.Printdisplay("You hesitate, unable to choose.\n")
+					display.Printdisplay("Please enter either \"1\" / \"ask for directions\" or \"2\" / \"ask if you can drink from the faucet\".\n")
 				}
 
 			}
@@ -524,7 +525,7 @@ func decisionSouth(player *Character) {
 
 			sayNothingToXavier()
 
-			fmt.Println("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet \n 3. ask where are we \n 4. Continue to say nothing")
+			display.Printdisplay("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet \n 3. ask where are we \n 4. Continue to say nothing")
 
 			sayNothingLoop:
 				for {
@@ -549,8 +550,8 @@ func decisionSouth(player *Character) {
 						break sayNothingLoop
 			
 					default:
-						fmt.Println("You hesitate, unable to choose.\n")
-						fmt.Println("Please enter either \"1\" / \"ask for directions\", \"2\" / \"ask if you can drink from the faucet\", \"3\" / \"ask where are we\" or \"4\" / \"continue to say nothing\".\n")
+						display.Printdisplay("You hesitate, unable to choose.\n")
+						display.Printdisplay("Please enter either \"1\" / \"ask for directions\", \"2\" / \"ask if you can drink from the faucet\", \"3\" / \"ask where are we\" or \"4\" / \"continue to say nothing\".\n")
 					}
 				}
 
@@ -558,14 +559,14 @@ func decisionSouth(player *Character) {
 
 		} else {
 
-			fmt.Println("You hesitate, unable to choose.\n")
-			fmt.Println("Please enter either \"1\" / \"ask where are we\" or \"2\" / \"say nothing\".\n")
+			display.Printdisplay("You hesitate, unable to choose.\n")
+			display.Printdisplay("Please enter either \"1\" / \"ask where are we\" or \"2\" / \"say nothing\".\n")
 
 		}
 	}
 
 	if game.learnedMudLocation {
-		fmt.Println("Do you...?: \n 1. Continue South for Mud \n 2. Continue into a forest that borders the fields")
+		display.Printdisplay("Do you...?: \n 1. Continue South for Mud \n 2. Continue into a forest that borders the fields")
 		scanner.Scan()
 		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		for {
@@ -578,7 +579,7 @@ func decisionSouth(player *Character) {
 			}
 		}
 	} else {
-		fmt.Println("Do you...?: \n 1. Continue South \n 2. Continue into a forest that borders the fields")
+		display.Printdisplay("Do you...?: \n 1. Continue South \n 2. Continue into a forest that borders the fields")
 		scanner.Scan()
 		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		for {
@@ -603,6 +604,7 @@ func decisionSouthDecisionSouth(player *Character) {
 		Bladed,
 	)
 	if err != nil {
+		// Make sure to keep it as a fmt.Println() and not replace it with display.Printdisplay()
 		fmt.Println("Could not create Raven's iron dagger:", err)
 		return
 	}
@@ -620,24 +622,24 @@ func decisionSouthDecisionSouth(player *Character) {
 	}
 
 	if game.learnedMudLocation {
-		fmt.Println("You decide to go further South towards Mud")
+		display.Printdisplay("You decide to go further South towards Mud")
 
 		time.Sleep(2 * time.Second)
 
-		fmt.Println("After much walking you find a cluster of buildings, they are grouped in small sets, forming streets inbetween them with what seems to be a townsquare in the center of it all. You assume this is Mud and a sign soon confirms your suspicions")
+		display.Printdisplay("After much walking you find a cluster of buildings, they are grouped in small sets, forming streets inbetween them with what seems to be a townsquare in the center of it all. You assume this is Mud and a sign soon confirms your suspicions")
 	} else {
-		fmt.Println("You decide to go further South")
+		display.Printdisplay("You decide to go further South")
 
 		time.Sleep(2 * time.Second)
 
-		fmt.Println("After much walking you find a cluster of buildings, they are grouped in small sets, forming streets inbetween them with what seems to be a townsquare in the center of it all. A sign lets you know that this village is known as \"Mud\"")
+		display.Printdisplay("After much walking you find a cluster of buildings, they are grouped in small sets, forming streets inbetween them with what seems to be a townsquare in the center of it all. A sign lets you know that this village is known as \"Mud\"")
 	
 		game.learnedMudLocation = true
 	}
 
 	time.Sleep(time.Second)
 
-	fmt.Println("From the corner of your eye you perceive a shadowy figure spy on you, hurrying to close the door of the building it is living in")
+	display.Printdisplay("From the corner of your eye you perceive a shadowy figure spy on you, hurrying to close the door of the building it is living in")
 
 	// TODO elaborate
 
@@ -648,7 +650,7 @@ func decisionSouthDecisionSouth(player *Character) {
 }
 
 func decisionSouthDecisionForest() {
-	fmt.Println("You penetrate the thick vegatation")
+	display.Printdisplay("You penetrate the thick vegatation")
 
 	time.Sleep(2 * time.Second)
 
@@ -656,11 +658,11 @@ func decisionSouthDecisionForest() {
 }
 
 func askXavierWhereWeAre() {
-	fmt.Println("You inquire about this place")
+	display.Printdisplay("You inquire about this place")
 
 	time.Sleep(time.Second)
 	
-	fmt.Println("\"Have you struck your head with a rock or something?\" You do not know how to react towards this valid hypothesis about your current situation dressed up as a quip, you feel a sharp pain in the back of your head. \"This is the small town of Mud, part of the parish of Soulstar\"")
+	display.Printdisplay("\"Have you struck your head with a rock or something?\" You do not know how to react towards this valid hypothesis about your current situation dressed up as a quip, you feel a sharp pain in the back of your head. \"This is the small town of Mud, part of the parish of Soulstar\"")
 
 	time.Sleep(time.Second)
 }
@@ -672,11 +674,11 @@ type GameState struct {
 var game GameState
 
 func askXavierForDirections() {
-	fmt.Println("You ask Xavier for directions")
+	display.Printdisplay("You ask Xavier for directions")
 
 	time.Sleep(time.Second)
 
-	fmt.Println("\"Mud is South of here if that's what you're asking\" he pauses for a second, \"so keep traveling in the direction you were going and you should be good\"")
+	display.Printdisplay("\"Mud is South of here if that's what you're asking\" he pauses for a second, \"so keep traveling in the direction you were going and you should be good\"")
 
 	game.learnedMudLocation = true
 
@@ -684,7 +686,7 @@ func askXavierForDirections() {
 }
 
 func askXavierIfYouCanDrinkFromTheFaucet(player *Character, xavier *Character) {
-	fmt.Println("\"Huh, I would let you... but I'm worried about the cursed, you know?\"")
+	display.Printdisplay("\"Huh, I would let you... but I'm worried about the cursed, you know?\"")
 
 	time.Sleep(time.Second)
 
@@ -692,36 +694,36 @@ func askXavierIfYouCanDrinkFromTheFaucet(player *Character, xavier *Character) {
 	
 	switch resultConversationalChallengeXavier {
 		case 2: // Complete success
-			fmt.Println("The man allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
+			display.Printdisplay("The man allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
 			player.CurrentHitpoints += 5
 	
 		case 1: // Faux pas
-			fmt.Println("The man hesitates but, after a while, allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
+			display.Printdisplay("The man hesitates but, after a while, allows you to drink; you take a refreshing sip. You have regenerated 5 hitpoints!")
 			player.CurrentHitpoints += 5
 	
 		case 0: // No healing
-			fmt.Println("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
+			display.Printdisplay("\"Sorry fella, can't do. \"Better safe than sorry\" as they say\"")
 	}
 
 	time.Sleep(time.Second)
 }
 
 func sayNothingToXavier() {
-	fmt.Println("You say nothing")
+	display.Printdisplay("You say nothing")
 
 	time.Sleep(time.Second)
 
-	fmt.Println("The man coughs, not knowing where to look exactly. So, huh... what leads you to this place?")
+	display.Printdisplay("The man coughs, not knowing where to look exactly. So, huh... what leads you to this place?")
 
 	time.Sleep(time.Second)
 }
 
 func continueToSayNothingToXavier() {
-	fmt.Println("You continue to say nothing")
+	display.Printdisplay("You continue to say nothing")
 
 	time.Sleep(time.Second)
 
-	fmt.Println("The man in front of you decides to shift his focus away from you, continuing with what he was doing previous to your presence in that place")
+	display.Printdisplay("The man in front of you decides to shift his focus away from you, continuing with what he was doing previous to your presence in that place")
 
 	time.Sleep(time.Second)
 }
@@ -731,7 +733,7 @@ func combat(player *Character, enemy *Character, distance int) {
 	var chosenWeapon string
 	var playerWeapon Weapon
 	
-	fmt.Println("Will you use melee or ranged weapons?")
+	display.Printdisplay("Will you use melee or ranged weapons?")
 
 	for {
 		fmt.Scanln(&chosenWeapon)
@@ -741,7 +743,7 @@ func combat(player *Character, enemy *Character, distance int) {
 			
 			time.Sleep(time.Second)
 
-			fmt.Println("You have chosen to get close and personal")
+			display.Printdisplay("You have chosen to get close and personal")
 
 			playerWeapon = player.MeleeWeapon
 
@@ -751,15 +753,15 @@ func combat(player *Character, enemy *Character, distance int) {
 
 			time.Sleep(time.Second)
 
-			fmt.Println("You have chosen to combat at a distance")
+			display.Printdisplay("You have chosen to combat at a distance")
 
 			playerWeapon = player.RangedWeapon
 
 			break
 			
 		} else {
-			fmt.Println("You hesitate, unable to choose.\n")
-			fmt.Println("Please enter either \"1\" / \"melee\" or \"2\" / \"ranged\".\n")
+			display.Printdisplay("You hesitate, unable to choose.\n")
+			display.Printdisplay("Please enter either \"1\" / \"melee\" or \"2\" / \"ranged\".\n")
 		}
 
 	}
@@ -798,58 +800,57 @@ func combat(player *Character, enemy *Character, distance int) {
 	for player.CurrentHitpoints > 0 && enemy.CurrentHitpoints > 0 {
 
 		// First character attacks
-		fmt.Printf("%s attacks %s with %s %s!\n", first.Name, second.Name, first.PossesivePronoun, firstWeapon.Name)
-
+		display.Printdisplay(fmt.Sprintf("%s attacks %s with %s %s!\n", first.Name, second.Name, first.PossesivePronoun, firstWeapon.Name,))
 		var rollEvasionSecondCharacter uint8 = uint8(rand.Intn(100))
 		var rollCriticalStrikeFirstCharacter uint8 = uint8(rand.Intn(100))
 		var randomAdditionalDamageFirstAttack uint8 = uint8(rand.Intn(2))
 
 		if (second.Agility >= rollEvasionSecondCharacter) {
-			fmt.Printf("%s has evaded %s's attack!\n", second.Name, first.Name)
+			display.Printdisplay(fmt.Sprintf("%s has evaded %s's attack!\n", second.Name, first.Name))
 		} else { 
 			if first.Luck >= rollCriticalStrikeFirstCharacter {
 				// Critical strike
 				second.CurrentHitpoints -= int((firstWeapon.Damage + randomAdditionalDamageFirstAttack) * 3)
-				fmt.Printf("%s has struck %s critically!\n", first.Name, second.Name)
+				display.Printdisplay(fmt.Sprintf("%s has struck %s critically!\n", first.Name, second.Name))
 			} else {
 				//Normal strike
 				second.CurrentHitpoints -= int(firstWeapon.Damage + randomAdditionalDamageFirstAttack)
 			}  
 		}
 
-		fmt.Printf("%s has %d hitpoints left\n", second.Name, second.CurrentHitpoints)
+		display.Printdisplay(fmt.Sprintf("%s has %d hitpoints left\n", second.Name, second.CurrentHitpoints))
 
 		if second.CurrentHitpoints <= 0 {
-			fmt.Printf("%s is defeated!\n", second.Name)
+			display.Printdisplay(fmt.Sprintf("%s is defeated!\n", second.Name))
 			break
 		}
 
 		time.Sleep(time.Second)
 
 		// Second character attacks
-		fmt.Printf("%s attacks %s with %s %s!\n", second.Name, first.Name, second.PossesivePronoun, secondWeapon.Name)
+		display.Printdisplay(fmt.Sprintf("%s attacks %s with %s %s!\n", second.Name, first.Name, second.PossesivePronoun, secondWeapon.Name))
 
 		var rollEvasionFirstCharacter uint8 = uint8(rand.Intn(100))
 		var rollCriticalStrikeSecondCharacter uint8 = uint8(rand.Intn(100))
 		var randomAdditionalDamageSecondAttack uint8 = uint8(rand.Intn(2))
 
 		if (first.Agility >= rollEvasionFirstCharacter) {
-			fmt.Printf("%s has evaded %s's attack!\n", first.Name, second.Name)
+			display.Printdisplay(fmt.Sprintf("%s has evaded %s's attack!\n", first.Name, second.Name))
 		} else {
 			if second.Luck >= rollCriticalStrikeSecondCharacter {
 				// Critical strike
 				first.CurrentHitpoints -= int((secondWeapon.Damage + randomAdditionalDamageSecondAttack) * 3)
-				fmt.Printf("%s has struck %s critically!\n", second.Name, first.Name)
+				display.Printdisplay(fmt.Sprintf("%s has struck %s critically!\n", second.Name, first.Name))
 			} else {
 				//Normal strike
 				first.CurrentHitpoints -= int(secondWeapon.Damage + randomAdditionalDamageSecondAttack)
 			}
 		}
 
-		fmt.Printf("%s has %d hitpoints left\n", first.Name, first.CurrentHitpoints)
+		display.Printdisplay(fmt.Sprintf("%s has %d hitpoints left\n", first.Name, first.CurrentHitpoints))
 
 		if first.CurrentHitpoints <= 0 {
-			fmt.Printf("%s is defeated!\n", first.Name)
+			display.Printdisplay(fmt.Sprintf("%s is defeated!\n", first.Name))
 			break
 		}
 
@@ -873,13 +874,13 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
 	time.Sleep(time.Second)
 
-	fmt.Println("You have engaged in a dialectical encounter against", enemy.Name)
+	display.Printdisplay("You have engaged in a dialectical encounter against", enemy.Name)
 
 	time.Sleep(time.Second)
 
     // Complete success
     if charismaRoll < threshold {
-		fmt.Println("You stand on the shoulders of giants and you have managed to convince your interlocutor")
+		display.Printdisplay("You stand on the shoulders of giants and you have managed to convince your interlocutor")
 		time.Sleep(time.Second)
 		player.addExperience(int(enemy.Charisma) * 10)
         return 2
@@ -888,7 +889,7 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
     // The player's luck and agility allows him to savage the situation and make a faux pas instead of utterly failing
     salvage := int(player.Luck) + int(player.Agility)
     if fauxPasRoll < salvage {
-		fmt.Println("You have awkwardly fumbled your way into a faux pas, it could be worse, but it certainly could be better")
+		display.Printdisplay("You have awkwardly fumbled your way into a faux pas, it could be worse, but it certainly could be better")
 		player.addExperience(int(enemy.Charisma) * 5)
 		// Longer wait for further awkwardness
 		time.Sleep(3 * time.Second)
@@ -896,7 +897,7 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
     }
 
     // Complete failure
-	fmt.Println("You utterly failed at trying to convince your interlocutor of anything, you may as well talk to a wall")
+	display.Printdisplay("You utterly failed at trying to convince your interlocutor of anything, you may as well talk to a wall")
 	time.Sleep(time.Second)
     return 0
 
@@ -907,7 +908,7 @@ func (player *Character) addExperience(ExperienceToAdd int) {
 
 	// Adding experience
 	player.Experience += ExperienceToAdd
-	fmt.Printf("You receive %d experience points\n", ExperienceToAdd)
+	display.Printdisplay(fmt.Sprintf("You receive %d experience points\n", ExperienceToAdd))
 
 	time.Sleep(time.Second)
 
@@ -916,9 +917,9 @@ func (player *Character) addExperience(ExperienceToAdd int) {
 		player.Experience -= player.ExperienceToNextLevel
 		player.Level++
 		player.ExperienceToNextLevel = 50 * player.Level
-		fmt.Println("You have leveled up!")
+		display.Printdisplay("You have leveled up!")
 		time.Sleep(time.Second)
-		fmt.Println("You are now level", player.Level, "and you need", player.ExperienceToNextLevel, "experience to level up again")
+		display.Printdisplay(fmt.Sprintf("You are now level %d, and you need %d experience to level up again.\n", player.Level, player.ExperienceToNextLevel,))
 		time.Sleep(time.Second)
 	}
 }
