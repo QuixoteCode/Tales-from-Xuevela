@@ -97,13 +97,14 @@ func (w Weapon) weaponIsEmpty() bool {
     return w.Name == "" && w.Damage == 0
 }
 
+// TODO this function seems to make the window be forever stuck
 func getAttribute(statName string, prompt string) uint8 {
 	var value int
 
 	// Checks whether the character attribute is 10 or lower and 0 or higher
 	for {
 		// TODO change for window-mac.go's functions
-		fmt.Print(prompt)
+		display.Printdisplay(prompt)
 		fmt.Scanln(&value)
 
 		switch {
@@ -128,7 +129,7 @@ type Inventory struct {
 	Items []Item
 }
 
-// It increases the quantity of an existing item or adds a new item to the inventory if it doesnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢t exist
+// It increases the quantity of an existing item or adds a new item to the inventory if it doesnt exist
 func (inventory *Inventory) Add(name string, quantity int) {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -143,7 +144,7 @@ func (inventory *Inventory) Add(name string, quantity int) {
 	})
 }
 
-// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arenÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢t enough units
+// It removes a specified quantity of an item and returns true if successful or false if the item is missing or there arent enough units
 func (inventory *Inventory) Remove(name string, quantity int) bool {
 	for i := range inventory.Items {
 		if inventory.Items[i].Name == name {
@@ -177,30 +178,6 @@ func (inventory *Inventory) Find(name string) *Item {
 
 	return nil
 }
-
-/*
-func main() {
-    // Keep this goroutine on the main OS thread.
-    // Cocoa UI initialization should happen on that thread.
-    runtime.LockOSThread()
-
-    // Create the native window.
-    display.OpenWindow()
-
-    // Display some sample story text.
-    display.Printdisplay("Your adventure starts now!")
-    display.Printdisplay("")
-    display.Printdisplay("It is a sunny summer morning.")
-    display.Printdisplay("A loud noise comes from the North.")
-
-	var selectedGender string
-	selectedGender = strings.ToLower(display.Input("Are you male or female:"))
-	display.Printdisplay(selectedGender)
-
-	// Start Cocoa's event loop to keep the window responsive.
-	display.Run()
-}
-*/
 
 func main() {
     // Keep this goroutine on the main OS thread.
@@ -396,7 +373,6 @@ func decisionNorth(player *Character) {
 	// Vara = roughly 0.8359 meters, 12 varas = roughly 10 meters, at 6 meters or taller virtually all falls are dangerous (no matter how well one lands), this amount of rope will allow the player to realistically get over a dangerous fall
 	display.Printdisplay("It is a reel of rope, you feel like it will be useful later on, it has been added to your inventory, it seems to be roughly 12 varas long")
 
-	// TODO fix: create an inventory instance, see compiler
 	player.Inventory.Add("Rope", 12)
 
 	time.Sleep(2 * time.Second)
@@ -874,7 +850,7 @@ func conversationalChallenge(player *Character, enemy *Character) uint8 {
 
 	time.Sleep(time.Second)
 
-	display.Printdisplay("You have engaged in a dialectical encounter against", enemy.Name)
+	display.Printdisplay(fmt.Sprintf("You have engaged in a dialectical encounter against %s", enemy.Name))
 
 	time.Sleep(time.Second)
 
