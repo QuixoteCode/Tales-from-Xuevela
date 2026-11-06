@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"runtime"
 	"Tales-from-Xuevela-main/display"
+	"strconv"
 )
 
 type WeaponType int
@@ -97,15 +98,17 @@ func (w Weapon) weaponIsEmpty() bool {
     return w.Name == "" && w.Damage == 0
 }
 
-// TODO this function seems to make the window be forever stuck
 func getAttribute(statName string, prompt string) uint8 {
-	var value int
 
 	// Checks whether the character attribute is 10 or lower and 0 or higher
 	for {
-		// TODO change for window-mac.go's functions
-		display.Printdisplay(prompt)
-		fmt.Scanln(&value)
+		input := display.Input(prompt)
+
+		value, err := strconv.Atoi(strings.TrimSpace(input))
+		if err != nil {
+			display.Printdisplay("Please enter a whole number.\n")
+			continue
+		}
 
 		switch {
 			case value >= 0 && value <= 10:
@@ -384,6 +387,7 @@ func decisionNorth(player *Character) {
 	display.Printdisplay("Do you continue walking in the same direction or deviate towards the well-trodden path?")
 
 	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
+	// TODO fix terminal input for display inputs
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -460,6 +464,7 @@ func decisionSouth(player *Character) {
 	display.Printdisplay("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
 
 	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
+	// TODO fix terminal input for display inputs
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
