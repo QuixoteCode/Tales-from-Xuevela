@@ -300,7 +300,8 @@ func main() {
 		choice = strings.ToLower(display.Input("Do you go North or South?"))
 
 		if choice == "north" {
-			decisionNorth(&player)
+			// TODO: Run decisionNorth and its waits asynchronously to avoid blocking the Cocoa event loop with waiting
+			go decisionNorth(&player)
 			break
 		} else if choice == "south" {
 			decisionSouth(&player)
@@ -351,6 +352,7 @@ func decisionNorth(player *Character) {
 
 	display.Printdisplay("You head North towards the sound...")
 
+	// TODO: Run decisionNorth and its waits asynchronously to avoid blocking the Cocoa event loop with waiting
 	time.Sleep(2 * time.Second)
 
 	display.Printdisplay("A giant rat jumps out of the grass! It looks angry...")
@@ -386,31 +388,29 @@ func decisionNorth(player *Character) {
 
 	display.Printdisplay("Do you continue walking in the same direction or deviate towards the well-trodden path?")
 
-	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
-	// TODO fix terminal input for display inputs
-	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		scanner.Scan()
-		choice := strings.ToLower(strings.TrimSpace(scanner.Text()))
+		choice := strings.ToLower(strings.TrimSpace(display.Input(
+			"Enter 1 to continue walking in the same direction or 2 to deviate towards the well-trodden path:",
+		)))
 	
 		if choice == "1" || choice == "continue walking in the same direction" {
-
+	
 			decisionNorthSameDirection()
-
+	
 			break
-
+	
 		} else if choice == "2" || choice == "deviate towards the well-trodden path" {
-
+	
 			decisionNorthPath()
-
+	
 			break
-
+	
 		} else {
-
-			display.Printdisplay("You hesitate, unable to choose.\n")
-			display.Printdisplay("Please enter either \"1\" / \"continue walking in the same direction\" or \"2\" / \"deviate towards the well-trodden path\".\n")
-
+	
+			display.Printdisplay("You hesitate, unable to choose.")
+			display.Printdisplay("Please enter either \"1\" / \"continue walking in the same direction\" or \"2\" / \"deviate towards the well-trodden path\".")
+	
 		}
 	}
 
