@@ -183,13 +183,19 @@ func (inventory *Inventory) Find(name string) *Item {
 }
 
 func main() {
-    // Keep this goroutine on the main OS thread.
-    // Cocoa UI initialization should happen on that thread.
     runtime.LockOSThread()
 
-    // Create the native window.
+    // Create the Cocoa window.
     display.OpenWindow()
-	
+
+    // Start the game in a separate goroutine.
+    go startGame()
+
+    // Start Cocoa's event loop on the main OS thread.
+    display.Run()
+}
+
+func startGame() {
 	display.Printdisplay("Enter your name:")
 	playerName = display.Input("Enter your name:")
 	display.Printdisplay("Hello, " + playerName)
@@ -301,7 +307,7 @@ func main() {
 
 		if choice == "north" {
 			// TODO: Run decisionNorth and its waits asynchronously to avoid blocking the Cocoa event loop with waiting
-			go decisionNorth(&player)
+			decisionNorth(&player)
 			break
 		} else if choice == "south" {
 			decisionSouth(&player)
@@ -316,9 +322,6 @@ func main() {
 		display.Printdisplay(fmt.Sprintf("%s is defeated!\n", player.Name))
 		os.Exit(0)
 	}
-
-	// Start Cocoa's event loop to keep the window responsive.
-	display.Run()
 }
 
 func decisionNorth(player *Character) {

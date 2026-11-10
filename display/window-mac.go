@@ -120,21 +120,47 @@ static void runNativeApplication(void) {
 }
 
 // Show a modal prompt and return the user's typed text
-static const char *promptNativeText(const char *prompt) {
+static char *promptNativeText(const char *prompt) {
     @autoreleasepool {
         NSAlert *alert = [[NSAlert alloc] init];
+
         [alert setMessageText:[NSString stringWithUTF8String:prompt]];
         [alert addButtonWithTitle:@"OK"];
 
         NSTextField *field = [[NSTextField alloc]
             initWithFrame:NSMakeRect(0, 0, 200, 24)];
+
         [alert setAccessoryView:field];
 
         [alert runModal];
 
         NSString *result = [field stringValue];
+
         return strdup([result UTF8String]);
     }
+}
+
+static char *promptNativeTextSync(const char *prompt) {
+    __block char *result = NULL;
+
+    char *promptCopy = strdup(prompt);
+
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        result = (char *)promptNativeText(promptCopy);
+    });
+
+    free(promptCopy);
+
+    return result;
+}
+
+static void appendNativeTextAsync(const char *message) {
+    char *messageCopy = strdup(message);
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        appendNativeText(messageCopy);
+        free(messageCopy);
+    });
 }
 */
 import "C"
@@ -147,13 +173,12 @@ func OpenWindow() {
     C.openNativeWindow()
 }
 
-// Println appends a line of text to the window
-// This initial version assumes it is called on the UI thread
+// Printdisplay schedules a text update on Cocoa's main thread
 func Printdisplay(message string) {
     cMessage := C.CString(message)
     defer C.free(unsafe.Pointer(cMessage))
 
-    C.appendNativeText(cMessage)
+    C.appendNativeTextAsync(cMessage)
 }
 
 // Run starts the native application's event loop
@@ -162,13 +187,14 @@ func Run() {
     C.runNativeApplication()
 }
 
-// Input shows a modal prompt and returns the user's response
+// Input displays a modal prompt on Cocoa's main thread
+// Must be called from a goroutine other than the main OS thread
 func Input(prompt string) string {
-	cPrompt := C.CString(prompt)
-	defer C.free(unsafe.Pointer(cPrompt))
+    cPrompt := C.CString(prompt)
+    defer C.free(unsafe.Pointer(cPrompt))
 
-	cResult := C.promptNativeText(cPrompt)
-	defer C.free(unsafe.Pointer(cResult))
+    cResult := C.promptNativeTextSync(cPrompt)
+    defer C.free(unsafe.Pointer(cResult))
 
-	return C.GoString(cResult)
+    return C.GoString(cResult)
 }
