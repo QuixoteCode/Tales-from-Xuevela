@@ -306,7 +306,6 @@ func startGame() {
 		choice = strings.ToLower(display.Input("Do you go North or South?"))
 
 		if choice == "north" {
-			// TODO: Run decisionNorth and its waits asynchronously to avoid blocking the Cocoa event loop with waiting
 			decisionNorth(&player)
 			break
 		} else if choice == "south" {
@@ -355,7 +354,6 @@ func decisionNorth(player *Character) {
 
 	display.Printdisplay("You head North towards the sound...")
 
-	// TODO: Run decisionNorth and its waits asynchronously to avoid blocking the Cocoa event loop with waiting
 	time.Sleep(2 * time.Second)
 
 	display.Printdisplay("A giant rat jumps out of the grass! It looks angry...")
@@ -393,9 +391,8 @@ func decisionNorth(player *Character) {
 
 
 	for {
-		choice := strings.ToLower(strings.TrimSpace(display.Input(
-			"Enter 1 to continue walking in the same direction or 2 to deviate towards the well-trodden path:",
-		)))
+		// TODO: test how bigger modals will fit in Windows
+		choice := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 to continue walking in the same direction or 2 to deviate towards the well-trodden path:",)))
 	
 		if choice == "1" || choice == "continue walking in the same direction" {
 	
@@ -720,8 +717,7 @@ func combat(player *Character, enemy *Character, distance int) {
 	display.Printdisplay("Will you use melee or ranged weapons?")
 
 	for {
-		fmt.Scanln(&chosenWeapon)
-    	chosenWeapon = strings.ToLower(strings.TrimSpace(chosenWeapon))
+    	chosenWeapon = strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or melee) or 2 (or ranged):",)))
 
 		if chosenWeapon == "1" || chosenWeapon == "melee" {
 			
