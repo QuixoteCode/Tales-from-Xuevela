@@ -392,7 +392,7 @@ func decisionNorth(player *Character) {
 
 	for {
 		// TODO: test how bigger modals will fit in Windows
-		choice := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 to continue walking in the same direction or 2 to deviate towards the well-trodden path:",)))
+		choice := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or continue walking in the same direction) or 2 (deviate towards the well-trodden path):",)))
 	
 		if choice == "1" || choice == "continue walking in the same direction" {
 	
@@ -464,12 +464,11 @@ func decisionSouth(player *Character) {
 	display.Printdisplay("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
 
 	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
-	// TODO fix terminal input for display inputs
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		scanner.Scan()
-		choice := strings.ToLower(strings.TrimSpace(scanner.Text()))
+
+		choice := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or ask where are we) or enter 2 (or say nothing):",)))
 	
 		if choice == "1" || choice == "ask where are we" {
 
@@ -478,8 +477,8 @@ func decisionSouth(player *Character) {
 			display.Printdisplay("Do you...?: \n 1. Ask for directions \n 2. Ask if you can drink from the faucet")
 
 			for {
-				scanner.Scan()
-				choiceA := strings.ToLower(strings.TrimSpace(scanner.Text()))
+
+				choiceA := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or ask for directions) or enter 2 (or ask if you can drink from the faucet):",)))
 
 				if choiceA == "1" || choiceA == "ask for directions" {
 					
@@ -510,8 +509,8 @@ func decisionSouth(player *Character) {
 
 			sayNothingLoop:
 				for {
-					scanner.Scan()
-					choiceB := strings.ToLower(strings.TrimSpace(scanner.Text()))
+
+					choiceB := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or ask for directions), or 2 (or ask if you can drink from the faucet), or 3 (or ask where are we) or 4 (or continue to say nothing):",)))
 			
 					switch choiceB {
 					case "1", "ask for directions":
@@ -548,8 +547,10 @@ func decisionSouth(player *Character) {
 
 	if game.learnedMudLocation {
 		display.Printdisplay("Do you...?: \n 1. Continue South for Mud \n 2. Continue into a forest that borders the fields")
-		scanner.Scan()
-		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
+
+		// TODO test how well this works with inconsistent casing for "South for Mud"
+		choiceDecision := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or continue South for Mud), or enter 2 (or continue into a forest that borders the fields):",)))
+
 		for {
 			if choiceDecision == "1" || choiceDecision == "continue south for mud" {
 				decisionSouthDecisionSouth(player)
@@ -561,8 +562,10 @@ func decisionSouth(player *Character) {
 		}
 	} else {
 		display.Printdisplay("Do you...?: \n 1. Continue South \n 2. Continue into a forest that borders the fields")
-		scanner.Scan()
-		choiceDecision := strings.ToLower(strings.TrimSpace(scanner.Text()))
+
+		// TODO test how well this works with inconsistent casing for "South"
+		choiceDecision := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or continue South), or enter 2 (or continue into a forest that borders the fields):",)))
+
 		for {
 			if choiceDecision == "1" || choiceDecision == "continue south" {
 				decisionSouthDecisionSouth(player)
