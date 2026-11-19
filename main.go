@@ -6,7 +6,6 @@ import (
 	"strings"
 	"math/rand"
 	"os"
-	"bufio"
 	"runtime"
 	"Tales-from-Xuevela-main/display"
 	"strconv"
@@ -195,7 +194,25 @@ func main() {
     display.Run()
 }
 
+func drawRedSquare() {
+
+    const width = 50
+    const height = 50
+
+    pixels := make([]uint32, width*height)
+
+    for i := range pixels {
+        pixels[i] = 0xFF0000FF
+    }
+
+    display.DrawCanvas(pixels, width, height)
+}
+
 func startGame() {
+	// TODO make it so it occupies the same space as the text
+	// TODO implement in Windows
+	drawRedSquare()
+
 	display.Printdisplay("Enter your name:")
 	playerName = display.Input("Enter your name:")
 	display.Printdisplay("Hello, " + playerName)
@@ -463,9 +480,6 @@ func decisionSouth(player *Character) {
 	
 	display.Printdisplay("Do you...?: \n 1. Ask where are we \n 2. Say nothing")
 
-	// Needed because of multiple words like in "ask where are we", fmt.Scanln only reads a single value
-	scanner := bufio.NewScanner(os.Stdin)
-
 	for {
 
 		choice := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or ask where are we) or enter 2 (or say nothing):",)))
@@ -548,7 +562,6 @@ func decisionSouth(player *Character) {
 	if game.learnedMudLocation {
 		display.Printdisplay("Do you...?: \n 1. Continue South for Mud \n 2. Continue into a forest that borders the fields")
 
-		// TODO test how well this works with inconsistent casing for "South for Mud"
 		choiceDecision := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or continue South for Mud), or enter 2 (or continue into a forest that borders the fields):",)))
 
 		for {
@@ -563,7 +576,6 @@ func decisionSouth(player *Character) {
 	} else {
 		display.Printdisplay("Do you...?: \n 1. Continue South \n 2. Continue into a forest that borders the fields")
 
-		// TODO test how well this works with inconsistent casing for "South"
 		choiceDecision := strings.ToLower(strings.TrimSpace(display.Input("Enter 1 (or continue South), or enter 2 (or continue into a forest that borders the fields):",)))
 
 		for {

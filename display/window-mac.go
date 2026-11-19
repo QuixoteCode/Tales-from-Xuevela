@@ -6,9 +6,14 @@ package display
 
 #import <Cocoa/Cocoa.h>
 #import <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 // Keep a reference to the text view so we can update it later
 static NSTextView *outputView = nil;
+
+// Needed for the canvas
+static NSImageView *canvasView = nil;
 
 // Create and configure the native macOS window.
 static void openNativeWindow(void) {
@@ -79,6 +84,15 @@ static void openNativeWindow(void) {
         // Add the scroll view to the window
         [[window contentView] addSubview:scrollView];
 
+        // Create the graphics canvas.
+        canvasView = [[NSImageView alloc] initWithFrame:NSMakeRect(660, 340, 200, 200)];
+
+        // Scale images to fit the available canvas.
+        [canvasView setImageScaling:NSImageScaleProportionallyUpOrDown];
+
+        // Add the canvas to the window.
+        [[window contentView] addSubview:canvasView];
+
         // Show the window and bring it to the foreground
         [window makeKeyAndOrderFront:nil];
         [NSApp activateIgnoringOtherApps:YES];
@@ -112,6 +126,60 @@ static void appendNativeText(const char *message) {
             NSMakeRange([[outputView string] length], 0)];
     }
 }
+
+static void drawNativeCanvas(const uint32_t *pixels, int width, int height) {
+
+    if (pixels == NULL || width <= 0 || height <= 0) {
+        return;
+    }
+
+    // Copy pixel data before scheduling the UI update.
+    NSData *pixelData = [NSData dataWithBytes:pixels length:width * height * 4];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        if (canvasView == nil) {
+            return;
+        }
+
+        // Create the bitmap.
+        NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
+            initWithBitmapDataPlanes:NULL
+            pixelsWide:width
+            pixelsHigh:height
+            bitsPerSample:8
+            samplesPerPixel:4
+            hasAlpha:YES
+            isPlanar:NO
+            colorSpaceName:NSDeviceRGBColorSpace
+            bitmapFormat:NSBitmapFormatAlphaNonpremultiplied
+            bytesPerRow:width * 4
+            bitsPerPixel:32];
+
+        // Convert RGBA pixels into the bitmap's memory.
+        unsigned char *destination = [bitmap bitmapData];
+        const uint32_t *source = (const uint32_t *)[pixelData bytes];
+
+        for (int i = 0; i < width * height; i++) {
+
+            uint32_t color = source[i];
+
+            destination[i * 4 + 0] = (color >> 24) & 0xFF;
+            destination[i * 4 + 1] = (color >> 16) & 0xFF;
+            destination[i * 4 + 2] = (color >> 8) & 0xFF;
+            destination[i * 4 + 3] = color & 0xFF;
+        }
+
+        // Create the image.
+        NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
+
+        [image addRepresentation:bitmap];
+
+        // Display it.
+        [canvasView setImage:image];
+    });
+}
+
 
 // Start Cocoa's event loop
 // This call remains active while the application is running
@@ -197,4 +265,18 @@ func Input(prompt string) string {
     defer C.free(unsafe.Pointer(cResult))
 
     return C.GoString(cResult)
+}
+
+// DrawCanvas displays an RGBA pixel array in the native canvas.
+func DrawCanvas(pixels []uint32, width, height int) {
+
+    if width <= 0 || height <= 0 || len(pixels) != width*height {
+        return
+    }
+
+    C.drawNativeCanvas(
+        (*C.uint32_t)(unsafe.Pointer(&pixels[0])),
+        C.int(width),
+        C.int(height),
+    )
 }
