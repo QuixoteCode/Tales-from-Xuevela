@@ -194,7 +194,7 @@ func main() {
     display.Run()
 }
 
-func drawRedSquare() {
+func drawBlankGenderCharacterIcon() {
 
     const width = 50
     const height = 50
@@ -205,13 +205,17 @@ func drawRedSquare() {
         pixels[i] = 0xFF0000FF
     }
 
+	for i := 0; i < 50; i++ {
+		pixels[i] = 0xFF808080
+	}
+	
     display.DrawCanvas(pixels, width, height)
 }
 
 func startGame() {
-	// TODO make it so it occupies the same space as the text
+
 	// TODO implement in Windows
-	drawRedSquare()
+	drawBlankGenderCharacterIcon()
 
 	display.Printdisplay("Enter your name:")
 	playerName = display.Input("Enter your name:")

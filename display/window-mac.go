@@ -8,6 +8,7 @@ package display
 #import <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <float.h>
 
 // Keep a reference to the text view so we can update it later
 static NSTextView *outputView = nil;
@@ -18,16 +19,13 @@ static NSImageView *canvasView = nil;
 // Create and configure the native macOS window.
 static void openNativeWindow(void) {
     @autoreleasepool {
-        // Initialize the Cocoa application
+
         [NSApplication sharedApplication];
 
-        // Make the application behave like a normal desktop app
         [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-        // Create a 900 x 600 window.
         NSRect frame = NSMakeRect(0, 0, 900, 600);
 
-        // Enable the title bar, close, minimize, and resize buttons
         NSWindowStyleMask style =
             NSWindowStyleMaskTitled |
             NSWindowStyleMaskClosable |
@@ -40,61 +38,89 @@ static void openNativeWindow(void) {
                         backing:NSBackingStoreBuffered
                           defer:NO];
 
-        // Set the title displayed in the window's title bar
         [window setTitle:@"My Adventure"];
-
-        // Center the window on the screen
         [window center];
 
-        // Create a scrollable area for the game's text
+        // Create horizontal container.
+        NSStackView *contentStack = [[NSStackView alloc] init];
+
+        [contentStack setOrientation:
+            NSUserInterfaceLayoutOrientationHorizontal];
+
+        [contentStack setAlignment:NSLayoutAttributeTop];
+        [contentStack setSpacing:10];
+        [contentStack setDistribution:NSStackViewDistributionFill];
+
+        [contentStack setFrame:NSMakeRect(20, 20, 860, 540)];
+
+        [contentStack setAutoresizingMask:
+            NSViewWidthSizable | NSViewHeightSizable];
+
+        // Create the scroll view.
         NSScrollView *scrollView = [[NSScrollView alloc]
-            initWithFrame:NSMakeRect(20, 20, 860, 540)];
+            initWithFrame:NSMakeRect(0, 0, 650, 540)];
 
-        // Display a vertical scrollbar when needed
         [scrollView setHasVerticalScroller:YES];
+        [scrollView setHasHorizontalScroller:NO];
+        [scrollView setAutohidesScrollers:YES];
 
-        // Allow the scroll view to resize with the window
         [scrollView setAutoresizingMask:
             NSViewWidthSizable | NSViewHeightSizable];
 
-        // Create the text area that will contain the story
+        // Create text view.
         outputView = [[NSTextView alloc]
-            initWithFrame:NSMakeRect(0, 0, 840, 540)];
+            initWithFrame:NSMakeRect(0, 0, 650, 540)];
 
-        // The player can select and copy text, but not edit it
         [outputView setEditable:NO];
         [outputView setSelectable:YES];
 
-        // Make the text area grow vertically as text is added
         [outputView setVerticallyResizable:YES];
         [outputView setHorizontallyResizable:NO];
 
-        // Sets a white font and a dark background
         [outputView setFont:[NSFont systemFontOfSize:15]];
         [outputView setTextColor:[NSColor whiteColor]];
-        [outputView setBackgroundColor:[NSColor colorWithWhite:0.12 alpha:1.0]];
+
+        [outputView setBackgroundColor:
+            [NSColor colorWithWhite:0.12 alpha:1.0]];
+
         [outputView setDrawsBackground:YES];
 
-        // Give the text some space around its edges
         [outputView setTextContainerInset:NSMakeSize(8, 8)];
 
-        // Put the text view inside the scroll view
+        // Configure text wrapping.
+        [[outputView textContainer] setWidthTracksTextView:YES];
+
+        [[outputView textContainer] setContainerSize:
+            NSMakeSize(650, CGFLOAT_MAX)];
+
+        // Put text view inside scroll view.
         [scrollView setDocumentView:outputView];
 
-        // Add the scroll view to the window
-        [[window contentView] addSubview:scrollView];
+        // Create graphics canvas.
+        canvasView = [[NSImageView alloc]
+            initWithFrame:NSMakeRect(0, 0, 200, 200)];
 
-        // Create the graphics canvas.
-        canvasView = [[NSImageView alloc] initWithFrame:NSMakeRect(660, 340, 200, 200)];
+        [canvasView setImageScaling:
+            NSImageScaleProportionallyUpOrDown];
 
-        // Scale images to fit the available canvas.
-        [canvasView setImageScaling:NSImageScaleProportionallyUpOrDown];
+        [canvasView setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-        // Add the canvas to the window.
-        [[window contentView] addSubview:canvasView];
+        [[canvasView widthAnchor]
+            constraintEqualToConstant:200].active = YES;
 
-        // Show the window and bring it to the foreground
+        [[canvasView heightAnchor]
+            constraintEqualToConstant:200].active = YES;
+
+        // Add both views to horizontal container.
+        [contentStack addArrangedSubview:scrollView];
+        [contentStack addArrangedSubview:canvasView];
+
+        // Add container to window.
+        [[window contentView] addSubview:contentStack];
+
+        // Show window.
         [window makeKeyAndOrderFront:nil];
+
         [NSApp activateIgnoringOtherApps:YES];
     }
 }
