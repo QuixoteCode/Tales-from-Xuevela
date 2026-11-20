@@ -22,10 +22,13 @@ static void openNativeWindow(void) {
 
         [NSApplication sharedApplication];
 
+        // Make the application behave like a normal desktop app
         [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
+        // Create a 900 x 600 window
         NSRect frame = NSMakeRect(0, 0, 900, 600);
 
+        // Enable the title bar, close, minimize, and resize buttons
         NSWindowStyleMask style =
             NSWindowStyleMaskTitled |
             NSWindowStyleMaskClosable |
@@ -38,7 +41,10 @@ static void openNativeWindow(void) {
                         backing:NSBackingStoreBuffered
                           defer:NO];
 
+        // Set the title displayed in the window's title bar
         [window setTitle:@"My Adventure"];
+
+        // Center the window on the screen
         [window center];
 
         // Create horizontal container.
@@ -60,31 +66,37 @@ static void openNativeWindow(void) {
         NSScrollView *scrollView = [[NSScrollView alloc]
             initWithFrame:NSMakeRect(0, 0, 650, 540)];
 
+        // Display a vertical scrollbar when needed
         [scrollView setHasVerticalScroller:YES];
+
         [scrollView setHasHorizontalScroller:NO];
         [scrollView setAutohidesScrollers:YES];
 
-        [scrollView setAutoresizingMask:
-            NSViewWidthSizable | NSViewHeightSizable];
+        // Allow the scroll view to resize with the window
+        [scrollView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 
         // Create text view.
-        outputView = [[NSTextView alloc]
-            initWithFrame:NSMakeRect(0, 0, 650, 540)];
+        outputView = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, 650, 540)];
 
+        // The player can select and copy text, but not edit it
         [outputView setEditable:NO];
         [outputView setSelectable:YES];
 
+        // Make the text area grow vertically as text is added
         [outputView setVerticallyResizable:YES];
         [outputView setHorizontallyResizable:NO];
 
+        // Sets a white font
         [outputView setFont:[NSFont systemFontOfSize:15]];
         [outputView setTextColor:[NSColor whiteColor]];
 
+        // Creates a grayscale color with 12% white (a very dark gray) for the background
         [outputView setBackgroundColor:
             [NSColor colorWithWhite:0.12 alpha:1.0]];
 
         [outputView setDrawsBackground:YES];
 
+        // Give the text some space around its edges
         [outputView setTextContainerInset:NSMakeSize(8, 8)];
 
         // Configure text wrapping.
